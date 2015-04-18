@@ -14,7 +14,9 @@ public class Room : MonoBehaviour
 	protected List<Trap> _traps = new List<Trap> ();
 
 	protected List<PersonAI> _people = new List<PersonAI> ();
-
+	public List<PersonAI> PeopleInRoom {
+		get { return _people;}
+	}
 
 	public void Awake ()
 	{

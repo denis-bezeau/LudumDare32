@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 public class Trap : MonoBehaviour
 {
-	private const string _title = "default";
+
+	protected const string _title = "default";
 	public virtual string Title { get { return _title; } }
-	
-	private const int _cost = 1;
+
+	private int	_cost = 1;
 	public virtual int Cost { 
 		get { return _cost; } 
 	}
