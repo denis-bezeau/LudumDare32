@@ -3,11 +3,23 @@ using System.Collections.Generic;
 
 public class Trap : MonoBehaviour
 {
-	static string _title;
-	public string title { get { return _title; } }
+	private const string _title = "default";
+	public virtual string Title { get { return _title; } }
 	
-	static int _cost;
-	public int cost { get { return _cost; } }
+	private const int _cost = 1;
+	public virtual int Cost { 
+		get { return _cost; } 
+	}
+
+	/// <summary>
+	/// Damage trap can take before being destroyed
+	/// </summary>
+	private int _hitPoints = -1;
+
+	/// <summary>
+	/// Length of time this trap exists
+	/// </summary>
+	private int _duration = -1;
 
 	/// <summary>
 	/// What to do when a new person enters the room
