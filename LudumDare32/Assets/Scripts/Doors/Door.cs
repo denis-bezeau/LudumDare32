@@ -18,6 +18,21 @@ public class Door : MonoBehaviour
 	private Room
 		_room2;
 
+	// Entrance/exit doors
+	public bool isEntrance = false;
+	public bool isExit = false;
+
+	// Closed door has health which enemies can deplete to open the door
+	private int _health = 10;
+
+	public void Hit()
+	{
+		_health--;
+
+		if(_health <= 0)
+			_isOpen = true;
+	}
+
 	public void Awake ()
 	{
 		if (_room1 == null || _room2 == null) {
@@ -27,7 +42,11 @@ public class Door : MonoBehaviour
 
 	public Room GetOtherRoom (Room thisRoom)
 	{
-		if (thisRoom == _room1) {
+		if((thisRoom == null) && isEntrance)
+		{
+			return _room1;
+		}
+		else if (thisRoom == _room1) {
 			return _room2;
 		} else if (thisRoom == _room2) {
 			return _room1;

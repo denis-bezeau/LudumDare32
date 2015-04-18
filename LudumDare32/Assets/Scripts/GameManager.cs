@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 	private int currentEscapeeCount;
 	private GameObject DefaultLevel;
 	private List<PersonAI> Enemies = new List<PersonAI>();
+	private Door _entranceDoor = null;
+	private Door _exitDoor = null;
 
 	public void Awake()
 	{
@@ -85,6 +87,16 @@ public class GameManager : MonoBehaviour
 		}
 
 		DefaultLevel = GameObject.FindGameObjectWithTag("LEVEL");
+
+		// Find entrance and exit doors
+		Door[] allDoors = FindObjectsOfType(typeof(Door)) as Door[];
+		foreach(Door door in allDoors)
+		{
+			if(door.isEntrance)
+				_entranceDoor = door;
+			if(door.isExit)
+				_exitDoor = door;
+		}
 	}
 
 	private void SpawnEnemy()
@@ -93,6 +105,7 @@ public class GameManager : MonoBehaviour
 		GameObject enemyGO = GameObject.Instantiate(EnemyPrefab, EnemySpawnLocations[randomSpawnLocation].transform.position, Quaternion.identity) as GameObject;
 		enemyGO.name = "enemy number ...  " + (Enemies.Count + 1);
 		PersonAI newEnemy = enemyGO.GetComponent<PersonAI>();
+		newEnemy.EnterLevel(_entranceDoor);
 		Enemies.Add(newEnemy);
 	}
 

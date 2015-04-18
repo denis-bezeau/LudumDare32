@@ -57,16 +57,35 @@ public class PersonAI : MonoBehaviour
 	private EAIState				m_aiState = EAIState.k_chooseADoor;					//!< AI FSM
 
 	private Door					m_targetDoor = null;								//!< Current door
+	private Door					m_previousDoor = null;								//!< Previous door we came through
 	private Room					m_currentRoom = null;								//!< Current room
 	private float					m_nextDoorBashTime = 0.0f;							//!< Time to bash the door next
 	
 	/**************************** PUBLIC METHODS ****************************/
-	
+
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Set the start door to walk to
+	//////////////////////////////////////////////////////////////////////////
+	public void EnterLevel(Door entrance)
+	{
+		m_targetDoor = entrance;
+
+		if(m_targetDoor != null)
+		{
+			StateChange(EAIState.k_walkToDoor);
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	/// @brief	Render this person dead :)
 	//////////////////////////////////////////////////////////////////////////
 	public void Kill()
 	{
+		KillEnemyEvent killEvent = new KillEnemyEvent();
+		killEvent.count = 1;
+		killEvent.enemy = this;
+		CTEventManager.FireEvent(killEvent);
+
 		StateChange(EAIState.k_dead);
 	}
 	
@@ -100,7 +119,19 @@ public class PersonAI : MonoBehaviour
 				// When we reach the door see if we need to bash down the door to walk through it
 				if(m_personMotion.HasReachedTarget())
 				{
-					StateChange(EAIState.k_bashDownDoor);
+					// Is this the exit door?
+					if(m_targetDoor.isExit)
+					{
+						EscapeEvent escapeEvent = new EscapeEvent();
+						escapeEvent.enemy = this;
+						CTEventManager.FireEvent(escapeEvent);
+
+						StateChange(EAIState.k_none);
+					}
+					else
+					{
+					   StateChange(EAIState.k_bashDownDoor);
+					}
 				}
 			}
 			break;
@@ -113,6 +144,7 @@ public class PersonAI : MonoBehaviour
 					{
 						// Walk through door to other room
 						m_currentRoom = m_targetDoor.GetOtherRoom(m_currentRoom);
+						m_previousDoor = m_targetDoor;
 						m_targetDoor = null;
 						
 						// Choose the next door in the new room to walk to
@@ -121,7 +153,7 @@ public class PersonAI : MonoBehaviour
 					else
 					{
 						// Do some damage to the door
-						//m_targetDoor.Hit();
+						m_targetDoor.Hit();
 						m_nextDoorBashTime = Time.time + (m_personality==EPersonality.k_aggressive ? k_bashIntervalAggressive : k_bashIntervalNormal);
 					}
 				}
@@ -144,12 +176,32 @@ public class PersonAI : MonoBehaviour
 		{
 			case EAIState.k_chooseADoor:
 			{
-				if(m_currentRoom != null)
+				if((m_currentRoom != null) && (m_currentRoom.Doors != null) && (m_currentRoom.Doors.Count > 0))
 				{
 					// Choose which door to walk to
-					//if(m_personality == EPersonality.k_explorer)
-					//m_targetDoor = m_currentRoom.GetDoor
+					if(m_personality == EPersonality.k_explorer)
+					{
+						// Explorers pick a random door
+						int doorIndex = (int)(UnityEngine.Random.value*m_currentRoom.Doors.Count);
+						if(doorIndex >= m_currentRoom.Doors.Count)
+							doorIndex = m_currentRoom.Doors.Count-1;
+						m_targetDoor = m_currentRoom.Doors[doorIndex];
 
+						// If this is the door we came through then try another one
+						if((m_targetDoor == m_previousDoor) && (m_currentRoom.Doors.Count > 1))
+						{
+							doorIndex++;
+							if(doorIndex >= m_currentRoom.Doors.Count)
+								doorIndex = 0;
+							m_targetDoor = m_currentRoom.Doors[doorIndex];
+						}
+					}
+					else
+					{
+						// Pick the first door (the one that gets us towards the exit fastest)
+						m_targetDoor = m_currentRoom.Doors[0];
+					}
+					
 					if(m_targetDoor != null)
 					{
 						StateChange(EAIState.k_walkToDoor);

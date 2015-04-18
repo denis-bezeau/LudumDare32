@@ -18,6 +18,8 @@ public class Room : MonoBehaviour
 		get { return _people;}
 	}
 
+	public List<Door> Doors { get{ return _doors; } }
+
 	public void Awake ()
 	{
 		BoxCollider coll = GetComponent<BoxCollider> ();
