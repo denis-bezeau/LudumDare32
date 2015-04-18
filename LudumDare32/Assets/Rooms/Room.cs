@@ -3,11 +3,18 @@ using System.Collections.Generic;
 
 public class Room : MonoBehaviour
 {
-	List<Door> _doors = new List<Door> ();
-	List<Trap> _traps = new List<Trap> ();
+
+
+	private List<Door> _doors = new List<Door> ();
+	private List<Trap> _traps = new List<Trap> ();
 
 	// TODO: change to real people
 	List<int> _people = new List<int> ();
+
+	// TODO: Maybe decide if this room has no more room for traps
+	public virtual bool CanHaveTraps {
+		get{ return true;}
+	}
 
 	/// <summary>
 	/// What to do when a new person enters the room

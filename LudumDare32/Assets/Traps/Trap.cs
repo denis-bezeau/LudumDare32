@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public class Trap : MonoBehaviour
 {
+
+	private int _cost;
+
+
 	/// <summary>
 	/// What to do when a new person enters the room
 	/// </summary>
@@ -19,6 +23,4 @@ public class Trap : MonoBehaviour
 	{
 		
 	}
-	
-	
 }
