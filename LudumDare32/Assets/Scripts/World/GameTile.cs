@@ -5,6 +5,7 @@ public class GameTile : MonoBehaviour
 {
 	private MeshCollider _col;
 	private Renderer _renderer;
+
 	
 	void Awake()
 	{
