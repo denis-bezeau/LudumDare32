@@ -4,17 +4,21 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour 
 {
-	public GameObject DefaultLevel;
+	//exposed variables for the user to change
+	public int MaximumEscapeeCount;
+	public int TotalEnemies;
 	public GameObject EnemyPrefab;
 	public GameObject[] EnemySpawnLocations;
-	public int TotalEnemies;
+
+	private int currentEscapeeCount;
+	private GameObject DefaultLevel;
 	private List<PersonAI> Enemies = new List<PersonAI>();
 
 	public void Awake()
 	{
 		CTEventManager.AddListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent>(OnRestartGame);
-
+		CTEventManager.AddListener<EscapeEvent>(OnEscapeEvent);
 		ResetGameSettings();
 	}
 
@@ -22,20 +26,32 @@ public class GameManager : MonoBehaviour
 	{
 		CTEventManager.RemoveListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.RemoveListener<RestartGameEvent>(OnRestartGame);
+		CTEventManager.RemoveListener<EscapeEvent>(OnEscapeEvent);
 	}
 
 	public void OnKillEnemyEvent(KillEnemyEvent eventData)
 	{
-		Debug.Log("OnKillEnemyEvent.enemyType: " + eventData.enemyType);
-		Debug.Log("OnKillEnemyEvent.count: " + eventData.count);
-
 		Enemies.Remove(eventData.enemy);
+
+		if (Enemies.Count <= 0)
+		{
+			YouWin();
+		}
+	}
+
+	public void OnEscapeEvent(EscapeEvent eventData)
+	{
+		currentEscapeeCount++;
+		Enemies.Remove(eventData.enemy);
+
+		if (currentEscapeeCount >= MaximumEscapeeCount)
+		{
+			YouLose();
+		}
 	}
 
 	public void OnRestartGame(RestartGameEvent eventData)
 	{
-		Debug.Log("OnKillEnemyEvent");
-
 		ResetGameSettings();
 	}
 
@@ -47,13 +63,13 @@ public class GameManager : MonoBehaviour
 			Enemies[i] = null;
 		}
 		Enemies.Clear();
-		Debug.Log("enemies.count=" + Enemies.Count);
 		for (int i = 0; i < TotalEnemies; ++i)
 		{
 			SpawnEnemy();
 		}
-		Debug.Log("enemies.count=" + Enemies.Count);
 		StartCoroutine(ReLoadLevel());
+
+		currentEscapeeCount = 0;
 	}
 
 	private IEnumerator ReLoadLevel()
@@ -80,15 +96,13 @@ public class GameManager : MonoBehaviour
 		Enemies.Add(newEnemy);
 	}
 
-	float timer = 0;
-	public void Update()
+	public void YouWin()
 	{
-		timer += Time.deltaTime;
+		Application.LoadLevel("YouWin");
+	}
 
-		if (timer > 5.0f)
-		{
-			timer = 0.0f;
-			ResetGameSettings();
-		}
+	public void YouLose()
+	{
+		Application.LoadLevel("YouLose");
 	}
 }

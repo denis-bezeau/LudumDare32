@@ -10,8 +10,7 @@ public class Room : MonoBehaviour
 
 	private List<Trap> _traps = new List<Trap> ();
 
-	// TODO: change to real people
-	List<int> _people = new List<int> ();
+	List<PersonAI> _people = new List<PersonAI>();
 
 
 	public void Awake()
