@@ -40,10 +40,10 @@ public class GridBuilder : EditorWindow
 			}
 
 			parent.name = "tileRoot";
-		
+
 			for(int i = 0; i < parent.transform.childCount; i++)
 			{
-				GameObject.Destroy(parent.transform.GetChild(i));
+				GameObject.DestroyImmediate(parent.transform.GetChild(i));
 			}
 
 			int tileCount = 1;
@@ -58,6 +58,9 @@ public class GridBuilder : EditorWindow
 					tileCount++;
 				}
 			}
+
+			// Art needs this rotated.
+			parent.transform.Rotate(0.0f, 180.0f, 0.0f);
 		}
 
 	}
