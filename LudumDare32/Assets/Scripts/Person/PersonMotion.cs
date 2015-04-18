@@ -85,6 +85,11 @@ public class PersonMotion : MonoBehaviour
 		m_rigidBody = GetComponent<Rigidbody>();
 		m_personAI = GetComponent<PersonAI>();
 
+		// Set height so we're not colliding with the ground plane
+		Vector3 startPos = transform.position;
+		startPos.y = 1.0f;
+		transform.position = startPos;
+
 		// TEST
 		WalkToTarget(new Vector3(-100.0f, 0.0f, -100.0f));
 	}
@@ -161,6 +166,7 @@ public class PersonMotion : MonoBehaviour
 	private void WalkToTarget()
 	{
 		Vector3 delta = m_targetPoint - transform.position;
+		delta.y = 0.0f;
 		float dist = delta.magnitude;
 
 		// Have we arrived at the door?
