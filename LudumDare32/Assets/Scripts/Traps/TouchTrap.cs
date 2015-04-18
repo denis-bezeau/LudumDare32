@@ -7,21 +7,19 @@ public class TouchTrap : Trap
 {
 	private Collider _trapCollider = null;
 
-	public TouchTrap (Room parent) : base(parent)
+	public TouchTrap ()
 	{
-		_trapCollider = GetComponent<Collider>();
-		if (_trapCollider != null)
-		{
+		_trapCollider = GetComponent<Collider> ();
+		if (_trapCollider != null) {
 			// listen for collisions with trap, blah blah
-		} else
-		{
-			Debug.LogError(this.name + " doesn't have a collider!");
+		} else {
+			Debug.LogError (this.name + " doesn't have a collider!");
 		}
 	}
 
-	public virtual void ApplyTrapEffect()
+	public virtual void ApplyTrapEffect ()
 	{
-		Debug.LogWarning(this.name + " applying effect");
+		Debug.LogWarning (this.name + " applying effect");
 		// nothing in base for now
 		// Generally apply to anyone who is in contact with trap
 	}

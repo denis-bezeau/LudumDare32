@@ -8,7 +8,7 @@ public class Trap : MonoBehaviour
 	
 	static int _cost;
 	public int cost { get { return _cost; } }
-	
+
 	/// <summary>
 	/// What to do when a new person enters the room
 	/// </summary>

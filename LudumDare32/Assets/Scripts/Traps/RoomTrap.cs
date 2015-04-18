@@ -4,6 +4,8 @@ using UnityEngine;
 /// </summary>
 public class RoomTrap : Trap
 {
+	private Room _parentRoom;
+
 	/// <summary>
 	/// The frequency with which we apply the trap's effect, in seconds
 	/// </summary>
@@ -12,25 +14,24 @@ public class RoomTrap : Trap
 		_effectFrequency = 5f;
 	private float _timeSinceLastEffect = 0f;
 
-	public RoomTrap (Room parent) : base(parent)
+	public RoomTrap (Room parent)
 	{
-
+		_parentRoom = parent;
 	}
 
-	public void Update()
+	public void Update ()
 	{
 		_timeSinceLastEffect += Time.deltaTime;
-		if (_timeSinceLastEffect > _effectFrequency)
-		{
-			ApplyTrapEffect();
+		if (_timeSinceLastEffect > _effectFrequency) {
+			ApplyTrapEffect ();
 			_timeSinceLastEffect = 0f;
 		}
 
 	}
 
-	public virtual void ApplyTrapEffect()
+	public virtual void ApplyTrapEffect ()
 	{
-		Debug.LogWarning(this.name + " applying effect");
+		Debug.LogWarning (this.name + " applying effect");
 		// nothing in base for now
 		// Generally apply effect to all _parentRoom.PeopleInRoom
 	}
