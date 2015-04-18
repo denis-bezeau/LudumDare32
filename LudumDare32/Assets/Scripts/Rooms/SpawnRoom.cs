@@ -1,4 +1,5 @@
-
+using System.Collections.Generic;
+using UnityEngine;
 /// <summary>
 /// A special room that allows spawning of people
 /// </summary>
@@ -9,19 +10,13 @@ public class SpawnRoom : Room
 		get{ return false;}
 	}
 
-	public void Awake()
+	new public void Awake ()
 	{
-		// Check for open path immediately
-	}
+		base.Awake ();
 
-	/// <summary>
-	/// Check if we can get to the exit through open doors
-	/// TODO: We probably don't want this here
-	/// </summary>
-	/// <returns><c>true</c>, if path to exit exists was opened, <c>false</c> otherwise.</returns>
-	private bool OpenPathToExitExists(Room currentRoom)
-	{
-		// recurse through rooms
-		return true;
+		Debug.Log ("Checking for available exit...");
+		// Check for open path immediately
+		List<Room> checkedRooms = new List<Room> ();
+		this.OpenPathToExitExists (ref checkedRooms);
 	}
 }
