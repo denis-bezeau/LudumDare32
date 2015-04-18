@@ -84,6 +84,9 @@ public class PersonMotion : MonoBehaviour
 		// Find other components on the same game object
 		m_rigidBody = GetComponent<Rigidbody>();
 		m_personAI = GetComponent<PersonAI>();
+
+		// TEST
+		WalkToTarget(new Vector3(-100.0f, 0.0f, -100.0f));
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -172,7 +175,7 @@ public class PersonMotion : MonoBehaviour
 		else
 		{
 			// No - keep moving towards our target
-			m_rigidBody.AddForce(delta.normalized * m_walkSpeed, ForceMode.Impulse);
+			m_rigidBody.AddForce(delta.normalized * m_walkSpeed, ForceMode.Force);//Impulse);
 		}
 	}
 }
