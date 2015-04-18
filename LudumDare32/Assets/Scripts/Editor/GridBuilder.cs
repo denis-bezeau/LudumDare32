@@ -10,8 +10,11 @@ public class GridBuilder : EditorWindow
 	private string _roomName = "room";
 	private GameEnums.RoomType _roomType = GameEnums.RoomType.Normal;
 
-	private static readonly int kTileWidth = 10;
-	private static readonly int kTileHeight = 10;
+	private static readonly int kTileWidth = 1;
+	private static readonly int kTileHeight = 1;
+
+	private static readonly float kZDepth = 1f;
+
 	private static readonly string kRoomPath = "Assets/Resources/Prefabs/Rooms/";
 	private static readonly string kRoomSuffix = ".prefab";
 
@@ -60,22 +63,23 @@ public class GridBuilder : EditorWindow
 				roomObj.gameObject.AddComponent<SpawnRoom>();
 			}
 
-
 			roomObj.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 
+			// Build the Room Collider
 			BoxCollider col = roomObj.gameObject.AddComponent<BoxCollider>();
 
-			col.size = new Vector3(kTileWidth * _roomWidthTiles, 5.0f, kTileHeight * _roomHeightTiles);
+			// Height is X, width is Y
+			col.size = new Vector3(kTileHeight * _roomHeightTiles, kTileWidth * _roomWidthTiles, kZDepth);
 
 			float colCenterX = ((kTileWidth * _roomWidthTiles) / 2.0f) - (kTileWidth / 2.0f);
 			float colCenterY = ((kTileHeight * _roomHeightTiles) / 2.0f) - (kTileHeight / 2.0f);
 		
-			col.center = new Vector3(colCenterX , 0.0f, colCenterY);
+			col.center = new Vector3(colCenterY ,-1.0f * colCenterX, 0.0f);
 
 			for(int i = 0; i < roomObj.transform.childCount; i++)
 			{
 				GameObject.DestroyImmediate(roomObj.transform.GetChild(i));
-			}
+			} 
 
 			int tileCount = 1;
 
@@ -84,17 +88,88 @@ public class GridBuilder : EditorWindow
 				for(int j = 0; j < _roomHeightTiles; j++)
 				{
 					GameObject tile = GameObject.Instantiate(_tilePrefab);
-					tile.transform.localPosition = new Vector3(kTileWidth * i , 0.0f, kTileHeight * j);
+					tile.transform.localPosition = new Vector3(kTileWidth * j , -1.0f * kTileHeight * i, 0.0f);
 					tile.name = "Tile" + tileCount;
 					tile.transform.parent = roomObj.transform;
 					tile.layer = LayerMask.NameToLayer("Tiles");
+
+					// Build the tile colliders
+					// First, top left collider
+					if( (i == 0 && j == 0))
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(1f, 0.25f, 0.5f);
+						col1.center = new Vector3(0.0f, 0.375f, 0.0f);
+
+						BoxCollider col2 = tile.AddComponent<BoxCollider>();
+						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
+						col2.center = new Vector3(-0.375f, 0.0f, 0.0f);
+					}
+					// Then, top right collider
+					else if (i == 0 && j == _roomHeightTiles - 1)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
+						col1.center = new Vector3(0.0f, 0.375f, 0.0f);
+						
+						BoxCollider col2 = tile.AddComponent<BoxCollider>();
+						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
+						col2.center = new Vector3(0.375f, 0.0f, 0.0f);
+					}
+					// Then, bottom left collider
+					else if (i == _roomWidthTiles - 1 && j == 0)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
+						col1.center = new Vector3(0.0f, -0.375f, 0.0f);
+						
+						BoxCollider col2 = tile.AddComponent<BoxCollider>();
+						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
+						col2.center = new Vector3(-0.375f, 0.0f, 0.0f);
+					}
+					// Then, bottom right collider
+					else if (i == _roomWidthTiles -1 && j == _roomHeightTiles - 1)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
+						col1.center = new Vector3(0.0f, -0.375f, 0.0f);
+						
+						BoxCollider col2 = tile.AddComponent<BoxCollider>();
+						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
+						col2.center = new Vector3(0.375f, 0.0f, 0.0f);
+					}
+					// Then, left wall colliders
+					else if (j == 0)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(0.25f, 1.0f, 0.5f);
+						col1.center = new Vector3(-0.375f, 0.0f, 0.0f);
+					}
+					// Then, bottom wall colliders
+					else if (i == _roomWidthTiles - 1)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
+						col1.center = new Vector3(0.0f, -0.375f, 0.0f);
+					}
+					// Then, top wall colliders
+					else if (i == 0)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
+						col1.center = new Vector3(0.0f, 0.375f, 0.0f);
+					}
+					// finally, right wall colliders
+					else if (j == _roomHeightTiles - 1)
+					{
+						BoxCollider col1 = tile.AddComponent<BoxCollider>();
+						col1.size = new Vector3(0.25f, 1.0f, 0.5f);
+						col1.center = new Vector3(0.375f, 0.0f, 0.0f);
+					}
 					tileCount++;
 				}
 			}
-
-			// Art needs this rotated.
-			roomObj.transform.Rotate(0.0f, 180.0f, 0.0f);
-
+	
 			GameObject prefab = PrefabUtility.CreatePrefab(kRoomPath + _roomName + kRoomSuffix, roomObj, ReplacePrefabOptions.Default); 
 
 			GameObject.DestroyImmediate(roomObj);
