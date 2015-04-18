@@ -36,7 +36,7 @@ public class GridBuilder : EditorWindow
 			if (parent == null)
 			{
 				parent = new GameObject();
-				parent = GameObject.Instantiate(parent);
+				//parent = GameObject.Instantiate(parent);
 			}
 
 			parent.name = "tileRoot";
