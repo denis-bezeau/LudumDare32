@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class Room : MonoBehaviour
 {
@@ -19,14 +20,13 @@ public class Room : MonoBehaviour
 	}
 
 	public List<Door> Doors { get{ return _doors; } }
+	private BoxCollider _roomCollider = null;
 
 	public void Awake ()
 	{
-		BoxCollider coll = GetComponent<BoxCollider> ();
-		if (coll != null)
-		{
-			// listen for collisions with room
-		} else
+		_roomCollider = GetComponent<BoxCollider> ();
+
+		if (_roomCollider == null)
 		{
 			Debug.LogError ("Room doesn't have a collider!");
 		}
@@ -37,11 +37,49 @@ public class Room : MonoBehaviour
 		}
 	}
 
+	public void OnCollisionEnter (Collision col)
+	{
+		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
+		if (person != null)
+		{
+			Debug.Log ("Person entered room");
+			_people.Add (person);
+		}
+	}
 
+	public void OnCollisionExit (Collision col)
+	{
+		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
+		if (person != null)
+		{
+			Debug.Log ("Person left room");
+			_people.Remove (person);
+		}
+	}
 
 	// TODO: Maybe decide if this room has no more room for traps
 	public virtual bool CanHaveTraps {
 		get{ return true;}
+	}
+
+	public virtual bool CanHaveTrapType (Type trapType)
+	{
+		if (!CanHaveTraps)
+			return false;
+
+		// We don't want more than one room trap
+		if (trapType is RoomTrap)
+		{
+			foreach (Trap t in _traps)
+			{
+				if (t is RoomTrap)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	/// <summary>
