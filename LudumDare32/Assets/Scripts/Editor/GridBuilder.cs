@@ -12,6 +12,8 @@ public class GridBuilder : EditorWindow
 
 	private static readonly int kRoomWidth = 10;
 	private static readonly int kRoomHeight = 10;
+	private static readonly string kRoomPath = "Assets/Resources/Prefabs/Rooms/";
+	private static readonly string kRoomSuffix = ".prefab";
 
 	private GameObject _tilePrefab;
 	
@@ -37,30 +39,30 @@ public class GridBuilder : EditorWindow
 		{
 			_tilePrefab = Resources.Load("Prefabs/GameTile") as GameObject;
 
-			GameObject parent = GameObject.Find(_roomName);
-			if (parent == null)
+			GameObject roomObj = GameObject.Find(_roomName);
+			if (roomObj == null)
 			{
-				parent = new GameObject();
+				roomObj = new GameObject();
 			}
 
-			parent.name = _roomName;
+			roomObj.name = _roomName;
 
 			if (_roomType == GameEnums.RoomType.Normal)
 			{
-				parent.gameObject.AddComponent<Room>();
+				roomObj.gameObject.AddComponent<Room>();
 			}
 			else if (_roomType == GameEnums.RoomType.Escape)
 			{
-				parent.gameObject.AddComponent<EscapeRoom>();
+				roomObj.gameObject.AddComponent<EscapeRoom>();
 			}
 			else if (_roomType == GameEnums.RoomType.Spawn)
 			{
-				parent.gameObject.AddComponent<SpawnRoom>();
+				roomObj.gameObject.AddComponent<SpawnRoom>();
 			}
 
-			for(int i = 0; i < parent.transform.childCount; i++)
+			for(int i = 0; i < roomObj.transform.childCount; i++)
 			{
-				GameObject.DestroyImmediate(parent.transform.GetChild(i));
+				GameObject.DestroyImmediate(roomObj.transform.GetChild(i));
 			}
 
 			int tileCount = 1;
@@ -72,13 +74,20 @@ public class GridBuilder : EditorWindow
 					GameObject tile = GameObject.Instantiate(_tilePrefab);
 					tile.transform.localPosition = new Vector3(kRoomWidth * i , 0.0f, kRoomHeight * j);
 					tile.name = "Tile" + tileCount;
-					tile.transform.parent = parent.transform;
+					tile.transform.parent = roomObj.transform;
 					tileCount++;
 				}
 			}
 
 			// Art needs this rotated.
-			parent.transform.Rotate(0.0f, 180.0f, 0.0f);
+			roomObj.transform.Rotate(0.0f, 180.0f, 0.0f);
+
+			GameObject prefab = PrefabUtility.CreatePrefab(kRoomPath + _roomName + kRoomSuffix, roomObj, ReplacePrefabOptions.Default); 
+
+			GameObject.DestroyImmediate(roomObj);
+
+			PrefabUtility.InstantiatePrefab(prefab);
+
 		}
 	}
 }
