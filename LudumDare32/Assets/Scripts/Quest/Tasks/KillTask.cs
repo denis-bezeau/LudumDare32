@@ -2,13 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class KillEnemyEvent : CTEvent
-{
-	public int enemyType;
-	public int count;
-}
-
-
 public class KillTask : Task
 {
 
