@@ -40,12 +40,13 @@ public class PersonMotion : MonoBehaviour
 	/*************************** GLOBAL METHODS *****************************/
 	
 	/***************************** PUBLIC DATA ******************************/
-
+					
 	public float					m_walkSpeed = 20.0f;								//!< Speed to walk
 
 	/***************************** PRIVATE DATA *****************************/
 
 	private Rigidbody				m_rigidBody;										//!< Our Rigidbody
+	private SphereCollider			m_collider;											//!< Our SphereCollider
 	private PersonAI				m_personAI;											//!< Our PersonAI script
 
 	private EMotionState			m_motionState = EMotionState.k_waitForTarget;		//!< Motion FSM
@@ -84,10 +85,11 @@ public class PersonMotion : MonoBehaviour
 		// Find other components on the same game object
 		m_rigidBody = GetComponent<Rigidbody>();
 		m_personAI = GetComponent<PersonAI>();
+		m_collider = GetComponent<SphereCollider>();
 
 		// Set height so we're not colliding with the ground plane
 		Vector3 startPos = transform.position;
-		startPos.y = 1.0f;
+		startPos.y = ((m_collider.radius - m_collider.center.y)*transform.localScale.y) + 0.5f;
 		transform.position = startPos;
 
 		// TEST
