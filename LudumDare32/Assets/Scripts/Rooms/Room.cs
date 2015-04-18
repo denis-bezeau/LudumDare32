@@ -24,6 +24,11 @@ public class Room : MonoBehaviour
 		{
 			Debug.LogError("Room doesn't have a collider!");
 		}
+		
+		if (_doors.Count < 1)
+		{
+			Debug.LogWarning(this.name + " doesn't have any doors!");
+		}
 	}
 
 
