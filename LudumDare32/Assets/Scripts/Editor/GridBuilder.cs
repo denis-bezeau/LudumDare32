@@ -8,7 +8,9 @@ public class GridBuilder : EditorWindow
 	private int _roomWidthTiles = 5;
 	private int _roomHeightTiles = 5;
 	private string _roomName = "room";
+
 	private GameEnums.RoomType _roomType = GameEnums.RoomType.Normal;
+	private GameEnums.TileSet _tileSet = GameEnums.TileSet.TileSet0;
 
 	private static readonly int kTileWidth = 1;
 	private static readonly int kTileHeight = 1;
@@ -16,8 +18,23 @@ public class GridBuilder : EditorWindow
 	private static readonly float kZDepth = 1f;
 
 	private static readonly string kRoomPath = "Assets/Resources/Prefabs/Rooms/";
+	private static readonly string kTileSetPath = "Textures/TileSets/";
+	private static readonly string kTileSetMatPath = "Materials";
 	private static readonly string kRoomSuffix = ".prefab";
 
+	private static string[] _tileTextureStrings =
+	{
+		"Wall_Top",
+		"Wall_Bottom",
+		"Wall_Left",
+		"Wall_Right",
+		"Wall_Corner_NW",
+		"Wall_Corner_NE",
+		"Wall_Corner_SW",
+		"Wall_Corner_SE",
+		"Floor_01"
+	};
+	
 	private GameObject _tilePrefab;
 	
 	[MenuItem("LudumDare32/Build Room")]
@@ -37,9 +54,12 @@ public class GridBuilder : EditorWindow
 		_roomName = EditorGUILayout.TextField("Room Name: ", _roomName);
 
 		_roomType = (GameEnums.RoomType)EditorGUILayout.EnumPopup ("Room Type", _roomType);
+		_tileSet = (GameEnums.TileSet)EditorGUILayout.EnumPopup ("Tile Set", _tileSet);
 
 		if(GUILayout.Button("Build Room")) 
 		{
+			string rootTexPath = kTileSetPath + _tileSet.ToString() + "/" + kTileSetMatPath + "/";
+			Debug.Log (rootTexPath);
 			_tilePrefab = Resources.Load("Prefabs/GameTile") as GameObject;
 
 			GameObject roomObj = GameObject.Find(_roomName);
@@ -93,8 +113,11 @@ public class GridBuilder : EditorWindow
 					tile.transform.parent = roomObj.transform;
 					tile.layer = LayerMask.NameToLayer("Tiles");
 
-					// Build the tile colliders
-					// First, top left collider
+					GameTile gameTile = tile.GetComponent<GameTile>();
+
+					// Build the tile colliders and Textures.
+
+					// First, Build the NW Tile
 					if( (i == 0 && j == 0))
 					{
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
@@ -104,8 +127,10 @@ public class GridBuilder : EditorWindow
 						BoxCollider col2 = tile.AddComponent<BoxCollider>();
 						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
 						col2.center = new Vector3(-0.375f, 0.0f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.WallCornerNW]);
 					}
-					// Then, top right collider
+					// Then, Build the NE Tile
 					else if (i == 0 && j == _roomHeightTiles - 1)
 					{
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
@@ -115,8 +140,10 @@ public class GridBuilder : EditorWindow
 						BoxCollider col2 = tile.AddComponent<BoxCollider>();
 						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
 						col2.center = new Vector3(0.375f, 0.0f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.WallCornerNE]);
 					}
-					// Then, bottom left collider
+					// Then, build the SW Tile
 					else if (i == _roomWidthTiles - 1 && j == 0)
 					{
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
@@ -126,8 +153,10 @@ public class GridBuilder : EditorWindow
 						BoxCollider col2 = tile.AddComponent<BoxCollider>();
 						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
 						col2.center = new Vector3(-0.375f, 0.0f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.WallCornerSW]);
 					}
-					// Then, bottom right collider
+					// Then, build the SE Tile
 					else if (i == _roomWidthTiles -1 && j == _roomHeightTiles - 1)
 					{
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
@@ -137,6 +166,8 @@ public class GridBuilder : EditorWindow
 						BoxCollider col2 = tile.AddComponent<BoxCollider>();
 						col2.size = new Vector3(0.25f, 1.0f, 0.5f);
 						col2.center = new Vector3(0.375f, 0.0f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.WallCornerSE]);
 					}
 					// Then, left wall colliders
 					else if (j == 0)
@@ -144,6 +175,8 @@ public class GridBuilder : EditorWindow
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
 						col1.size = new Vector3(0.25f, 1.0f, 0.5f);
 						col1.center = new Vector3(-0.375f, 0.0f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath +  _tileTextureStrings[(int)GameEnums.TileType.WallLeft]);
 					}
 					// Then, bottom wall colliders
 					else if (i == _roomWidthTiles - 1)
@@ -151,6 +184,8 @@ public class GridBuilder : EditorWindow
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
 						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
 						col1.center = new Vector3(0.0f, -0.375f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath +  _tileTextureStrings[(int)GameEnums.TileType.WallBottom]);
 					}
 					// Then, top wall colliders
 					else if (i == 0)
@@ -158,6 +193,8 @@ public class GridBuilder : EditorWindow
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
 						col1.size = new Vector3(1.0f, 0.25f, 0.5f);
 						col1.center = new Vector3(0.0f, 0.375f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.WallTop]);
 					}
 					// finally, right wall colliders
 					else if (j == _roomHeightTiles - 1)
@@ -165,6 +202,12 @@ public class GridBuilder : EditorWindow
 						BoxCollider col1 = tile.AddComponent<BoxCollider>();
 						col1.size = new Vector3(0.25f, 1.0f, 0.5f);
 						col1.center = new Vector3(0.375f, 0.0f, 0.0f);
+
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.WallRight]);
+					}
+					else
+					{
+						gameTile.SetTexture(rootTexPath + _tileTextureStrings[(int)GameEnums.TileType.Floor]);
 					}
 					tileCount++;
 				}

@@ -5,8 +5,7 @@ public class GameTile : MonoBehaviour
 {
 	private MeshCollider _col;
 	private Renderer _renderer;
-
-	
+		
 	void Awake()
 	{
 		_col = this.gameObject.GetComponent<MeshCollider>();
@@ -64,5 +63,11 @@ public class GameTile : MonoBehaviour
 		{
 			// yeah.
 		}
+	}
+
+	public void SetTexture(string texPath)
+	{
+		Material tex = Resources.Load <Material>(texPath);
+		this.gameObject.GetComponent<Renderer>().material = tex;
 	}
 }

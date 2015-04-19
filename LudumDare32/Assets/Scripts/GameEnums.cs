@@ -9,4 +9,26 @@ public class GameEnums
 		Spawn,
 		Escape
 	}
+
+	public enum TileSet
+	{
+		TileSet0 = 0,
+
+		Count
+	}
+
+	public enum TileType
+	{
+		WallTop = 0,
+		WallBottom,
+		WallLeft,
+		WallRight,
+		WallCornerNW,
+		WallCornerNE,
+		WallCornerSW,
+		WallCornerSE,
+		Floor,
+
+		Count
+	}
 }
