@@ -88,9 +88,9 @@ public class DoorBuilder : EditorWindow
 
 		GUILayout.Label ("Door editing tools", EditorStyles.boldLabel);
 
-		if (GUILayout.Button ("Remove missing doors from rooms"))
+		if (GUILayout.Button ("Remove missing doors & tiles from rooms"))
 		{
-			RemoveMissingDoors ();
+			RemoveMissingDoorsAndTiles ();
 		}
 
 		EditorGUILayout.BeginHorizontal ();
@@ -203,12 +203,13 @@ public class DoorBuilder : EditorWindow
 		Selection.activeGameObject = doorObj;
 	}
 
-	private void RemoveMissingDoors ()
+	private void RemoveMissingDoorsAndTiles ()
 	{
 		Room[] sceneRooms = GameObject.FindObjectsOfType<Room> ();
 		foreach (Room r in sceneRooms)
 		{
 			Debug.Log (r.name + " bad doors cleaned up: " + r.RemoveBadDoors ());
+			Debug.Log (r.name + " bad tiles cleaned up: " + r.RemoveBadTiles ());
 		}
 	}
 
@@ -313,8 +314,15 @@ public class DoorBuilder : EditorWindow
 		if (Physics.Raycast (detectBehind, out hit))
 		{
 			GameObject obj = hit.collider.gameObject;
-			Debug.Log ("Removing tile: " + obj.name);
-			Undo.DestroyObjectImmediate (obj);
+
+			// Only remove GameTiles
+			GameTile tile = obj.GetComponent<GameTile> ();
+			if (tile != null)
+			{
+				Debug.Log ("Removing tile: " + tile.name);
+				tile.parentRoom.RemoveTileFromRoom (tile);
+				Undo.DestroyObjectImmediate (obj);
+			}
 		}
 	}
 

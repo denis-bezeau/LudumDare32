@@ -47,6 +47,8 @@ public class Room : MonoBehaviour
 		{
 			RemoveBadDoors ();
 		}
+
+		RemoveBadTiles ();
 	}
 
 	public int RemoveBadDoors ()
@@ -70,6 +72,29 @@ public class Room : MonoBehaviour
 		}
 
 		return badDoors.Count;
+	}
+
+	public int RemoveBadTiles ()
+	{
+		List<GameTile> badTiles = new List<GameTile> ();
+		foreach (GameTile d in _tiles)
+		{
+			if (d == null)
+			{
+				Debug.LogWarning ("Missing tile! Clean up tiles in " + this.name);
+				
+				// Can't modify the list while interating
+				badTiles.Add (d);
+			}
+		}
+		
+		// Get rid of them
+		foreach (GameTile bd in badTiles)
+		{
+			_tiles.Remove (bd);
+		}
+		
+		return badTiles.Count;
 	}
 	
 	public void OnCollisionEnter (Collision col)
@@ -224,6 +249,11 @@ public class Room : MonoBehaviour
 	public bool CheckForDoorInRoom (Door d)
 	{
 		return _doors.Contains (d);
+	}
+
+	public bool RemoveTileFromRoom (GameTile tile)
+	{
+		return _tiles.Remove (tile);
 	}
 
 }
