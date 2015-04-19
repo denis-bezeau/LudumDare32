@@ -105,6 +105,12 @@ public class DoorBuilder : EditorWindow
 		}
 		EditorGUILayout.EndHorizontal ();
 
+		//Button to turn off all Mesh Renderers on All Doors
+		if (GUILayout.Button ("Toggle Tile Mesh Renders"))
+		{
+			ToggleDoorsMeshRenderer ();
+		}
+
 		GameObject gO = Selection.activeGameObject;
 		Door selectedDoor = null;
 		if (gO != null)
@@ -254,6 +260,25 @@ public class DoorBuilder : EditorWindow
 			foreach (GameTile gT in tiles)
 			{
 				RemoveBehindTile (gT);
+			}
+		}
+	}
+
+	private void ToggleDoorsMeshRenderer ()
+	{
+		//Debug.Log("Hello?");
+
+		Door[] allDoors = GameObject.FindObjectsOfType<Door> ();
+
+		foreach (Door d in allDoors)
+		{
+			MeshRenderer[] meshRenderers = d.GetComponentsInChildren<MeshRenderer>();
+			Debug.Log(d);
+
+			foreach (MeshRenderer m in meshRenderers)
+			{
+				Debug.Log(m);
+				m.enabled = !m.enabled;
 			}
 		}
 	}
