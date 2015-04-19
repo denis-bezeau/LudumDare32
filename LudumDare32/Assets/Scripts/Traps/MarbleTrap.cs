@@ -30,6 +30,6 @@ public class MarbleTrap : Trap
 	
 	void OnTriggerExit(Collider col)
 	{
-		base.OnTriggerEnter(col);
+		base.OnTriggerExit(col);
 	}
 }
