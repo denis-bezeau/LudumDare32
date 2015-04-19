@@ -140,6 +140,7 @@ public class PersonMotion : MonoBehaviour
 		{
 			case EMotionState.k_waitForTarget:
 			{
+				m_rigidBody.velocity = Vector3.zero;
 			}
 			break;
 
@@ -151,12 +152,14 @@ public class PersonMotion : MonoBehaviour
 			case EMotionState.k_waitForTime:
 			{
 				// Stop walking for a random amount of time
+				m_rigidBody.velocity = Vector3.zero;
 				m_waitTime = Time.time + (UnityEngine.Random.value * k_maxWaitTime);
 			}
 			break;
 				
 			case EMotionState.k_dead:
 			{
+				m_rigidBody.velocity = Vector3.zero;
 			}
 			break;
 		}
