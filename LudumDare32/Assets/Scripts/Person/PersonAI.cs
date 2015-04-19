@@ -56,6 +56,9 @@ public class PersonAI : MonoBehaviour
 	
 	private EAIState				m_aiState = EAIState.k_chooseADoor;					//!< AI FSM
 
+	private SpawnRoom				m_spawnRoom = null;									//!< Current level spawn room
+	private EscapeRoom 				m_escapeRoom = null;								//!< Current level escape room
+
 	private Door					m_targetDoor = null;								//!< Current door
 	private Door					m_previousDoor = null;								//!< Previous door we came through
 	private Room					m_currentRoom = null;								//!< Current room
@@ -65,16 +68,16 @@ public class PersonAI : MonoBehaviour
 	/**************************** PUBLIC METHODS ****************************/
 
 	//////////////////////////////////////////////////////////////////////////
-	/// @brief	Set the start door to walk to
+	/// @brief	Enter the level in the spawn room
 	//////////////////////////////////////////////////////////////////////////
-	public void EnterLevel(Door entrance)
+	public void EnterLevel(SpawnRoom spawnRoom, EscapeRoom escapeRoom)
 	{
-		m_targetDoor = entrance;
+		m_spawnRoom = spawnRoom;
+		m_escapeRoom = escapeRoom;
 
-		if(m_targetDoor != null)
-		{
-			StateChange(EAIState.k_walkToDoor);
-		}
+		// Start in spawn room - look for a door
+		m_currentRoom = m_spawnRoom;
+		StateChange(EAIState.k_chooseADoor);
 	}
 
 	//////////////////////////////////////////////////////////////////////////

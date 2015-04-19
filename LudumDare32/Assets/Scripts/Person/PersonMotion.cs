@@ -88,12 +88,12 @@ public class PersonMotion : MonoBehaviour
 		m_collider = GetComponent<SphereCollider>();
 
 		// Set height so we're not colliding with the ground plane
-		Vector3 startPos = transform.position;
+		/*Vector3 startPos = transform.position;
 		startPos.y = ((m_collider.radius - m_collider.center.y)*transform.localScale.y) + 0.5f;
-		transform.position = startPos;
+		transform.position = startPos;*/
 
-		// TEST
-		WalkToTarget(new Vector3(-100.0f, 0.0f, -100.0f));
+		// WALK TEST
+		//WalkToTarget(new Vector3(-100.0f, 0.0f, -100.0f));
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ public class PersonMotion : MonoBehaviour
 	private void WalkToTarget()
 	{
 		Vector3 delta = m_targetPoint - transform.position;
-		delta.y = 0.0f;
+		delta.z = 0.0f;
 		float dist = delta.magnitude;
 
 		// Have we arrived at the door?

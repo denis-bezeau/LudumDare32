@@ -4,6 +4,15 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour 
 {
+	[System.Serializable]
+	public class AttackWave
+	{
+		public GameObject prefab;
+		public int count = 10;
+		public PersonAI.EPersonality personality;
+		public float duration = 60.0f;
+	}
+
 	private static GameManager instance;
 
 	//exposed variables for the user to change
@@ -14,20 +23,23 @@ public class GameManager : MonoBehaviour
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
 	public Animator Hud;
-	private GameObject PlantTrapPrefab;
-	private GameObject MarbleTrapPrefab;
-	private GameObject DoorTrapPrefab;
-
+	public GameObject PlantTrapPrefab;
+	public GameObject MarbleTrapPrefab;
+	public GameObject DoorTrapPrefab;
+	public AttackWave[] attackWaves;
 
 	private int currentEscapeeCount;
 	private GameObject DefaultLevel;
 	private List<PersonAI> Enemies = new List<PersonAI>();
 	private bool musicStarted;
-	private Door _entranceDoor = null;
-	private Door _exitDoor = null;
+	private SpawnRoom _spawnRoom = null;
+	private EscapeRoom _escapeRoom = null;
 	private int [] trapCosts;
 	private float energy;
 	private Trap.TrapType currentSelectedTrap = Trap.TrapType.None;
+
+	private float _nextAttackWaveTime = 0.0f;
+	private int _attackWaveNumber = 0;
 
 	public static GameManager GetInstance()
 	{
@@ -60,9 +72,6 @@ public class GameManager : MonoBehaviour
 
 	public void Awake()
 	{
-		instance = this;
-		SetUpTrapData();
-
 		CTEventManager.AddListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent>(OnRestartGame);
 		CTEventManager.AddListener<EscapeEvent>(OnEscapeEvent);
@@ -74,7 +83,7 @@ public class GameManager : MonoBehaviour
 		PlayerPrefs.SetFloat("speechVolume", 0.85f);
 
 		SoundManager.GetInstance();
-		
+		SetUpTrapData();
 	}
 
 	public void OnDestroy()
@@ -84,6 +93,54 @@ public class GameManager : MonoBehaviour
 		CTEventManager.RemoveListener<EscapeEvent>(OnEscapeEvent);
 		CTEventManager.RemoveListener<BuyTrapEvent>(OnBuyTrapEvent);
 		CTEventManager.RemoveListener<PlaceTrapEvent>(OnPlaceTrapEvent);
+	}
+
+	/// @brief	Manage attack waves
+	private void UpdateAttackWaves()
+	{
+		// More attack waves to generate?
+		if(_attackWaveNumber < attackWaves.Length)
+		{
+			// Time to generate the next attack wave?
+			if(Time.time > _nextAttackWaveTime)
+			{
+				// Generate enemies in spawn room
+				if(_spawnRoom != null)
+				{
+#if false
+					// Spawn enemies on spawn room tiles
+					int numEnemies = 0;
+					List<GameTile> spawnTiles = _spawnRoom.GameTiles;
+
+					foreach(GameTile tile in spawnTiles)
+					{
+						if(!tile.IsWallTile)
+						{
+							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
+
+							// Got enough for attack wave?
+							numEnemies++;
+							if(numEnemies >= attackWaves[_attackWaveNumber].count)
+								break;
+						}
+					}
+#else
+					// Spawn enemies in centre pf the spawn room
+					BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
+					if(spawnBox != null)
+					{
+						for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
+						{
+							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, spawnBox.center, attackWaves[_attackWaveNumber].personality);
+						}
+					}
+#endif
+				}
+
+				_nextAttackWaveTime = Time.time + attackWaves[_attackWaveNumber].duration;
+				_attackWaveNumber++;
+			}
+		}
 	}
 
 	public void OnKillEnemyEvent(KillEnemyEvent eventData)
@@ -135,7 +192,7 @@ public class GameManager : MonoBehaviour
 		GameObject.Destroy(DefaultLevel);
 		DefaultLevel = null;
 
-		AsyncOperation levelLoadOperation = Application.LoadLevelAdditiveAsync("DefaultLevel");//"RoomTest");
+		AsyncOperation levelLoadOperation = Application.LoadLevelAdditiveAsync("Level_00");//"RoomTest");
 
 		while (levelLoadOperation.isDone == false)
 		{
@@ -150,30 +207,22 @@ public class GameManager : MonoBehaviour
 
 		DefaultLevel = GameObject.FindGameObjectWithTag("LEVEL");
 
-		// Find entrance and exit doors
-		Door[] allDoors = FindObjectsOfType(typeof(Door)) as Door[];
-		foreach(Door door in allDoors)
-		{
-			if(door.isEntrance)
-				_entranceDoor = door;
-			if(door.isExit)
-				_exitDoor = door;
-		}
+		// Find spawn and escape rooms rooms
+		_spawnRoom = FindObjectOfType(typeof(SpawnRoom)) as SpawnRoom;
+		_escapeRoom = FindObjectOfType(typeof(EscapeRoom)) as EscapeRoom;
 
-		// Spawn enemies (after finding entrance door above)
-		for (int i = 0; i < TotalEnemies; ++i)
-		{
-			SpawnEnemy();
-		}
+		// Start level
+		_attackWaveNumber = 0;
+		_nextAttackWaveTime = 0.0f;
 	}
 
-	private void SpawnEnemy()
+	private void SpawnEnemy(GameObject prefab, Vector3 pos, PersonAI.EPersonality personality)
 	{
-		int randomSpawnLocation = Random.Range(0, EnemySpawnLocations.Length - 1);
-		GameObject enemyGO = GameObject.Instantiate(EnemyPrefab, EnemySpawnLocations[randomSpawnLocation].transform.position, Quaternion.identity) as GameObject;
+		GameObject enemyGO = GameObject.Instantiate(prefab, pos, Quaternion.identity) as GameObject;
 		enemyGO.name = "enemy number ...  " + (Enemies.Count + 1);
 		PersonAI newEnemy = enemyGO.GetComponent<PersonAI>();
-		newEnemy.EnterLevel(_entranceDoor);
+		newEnemy.m_personality = personality;
+		newEnemy.EnterLevel(_spawnRoom, _escapeRoom);
 		Enemies.Add(newEnemy);
 	}
 
@@ -194,6 +243,8 @@ public class GameManager : MonoBehaviour
 
 	public void Update()
 	{
+		UpdateAttackWaves();
+
 		energy += energyRegenSpeed * Time.deltaTime;
 	}
 
@@ -202,7 +253,6 @@ public class GameManager : MonoBehaviour
 		energy = 0;
 
 		trapCosts = new int [(int)Trap.TrapType.COUNT];
-		trapCosts[(int)Trap.TrapType.None] = 0;
 		trapCosts[(int)Trap.TrapType.Door] = 10;
 		trapCosts[(int)Trap.TrapType.Plant] = 30;
 		trapCosts[(int)Trap.TrapType.Marble] = 20;
@@ -210,12 +260,7 @@ public class GameManager : MonoBehaviour
 
 	public int GetTrapCost(Trap.TrapType type)
 	{
-		if ((int)type < (int)Trap.TrapType.COUNT)
-		{
-			return trapCosts[(int)type];
-		}
-
-		return 0;
+		return trapCosts[(int)type];
 	}
 
 	public void OnBuyTrapEvent(BuyTrapEvent eventData)
@@ -243,7 +288,7 @@ public class GameManager : MonoBehaviour
 			{
 				Debug.Log("OnPlaceTrapEvent cost =" + cost + " , energy=" + energy);
 				energy -= (float)cost;
-				InstantiateTrapAtLocation(currentSelectedTrap, eventData.gameTile);
+				InstantiateTrapAtLocation(currentSelectedTrap, eventData.position);
 			}
 		}
 		else
@@ -252,108 +297,27 @@ public class GameManager : MonoBehaviour
 		}
 	}
 	
-	public void InstantiateTrapAtLocation(Trap.TrapType type, GameTile tile)
+	public void InstantiateTrapAtLocation(Trap.TrapType type, Vector3 position)
 	{
-		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + tile.transform.position);
+		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + position);
 		switch (type)
 		{
 			case Trap.TrapType.Door:
 				{
-					currentSelectedTrap = Trap.TrapType.None;
-					if (DoorTrapPrefab == null)
-					{
-						DoorTrapPrefab = Resources.Load("Prefabs/traps/DoorTrap/DoorTrap") as GameObject;
-					}
-					GameObject newTrapGameObject = GameObject.Instantiate(DoorTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
-					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
-					tile.currentTrap = newTrap;
-					if (tile.parentRoom != null)
-					{
-						tile.parentRoom.AddTrapToRoom(newTrap);
-					}
-					
+					GameObject.Instantiate(DoorTrapPrefab, position, Quaternion.identity);
 					break;
 				}
 			case Trap.TrapType.Plant:
 				{
-					currentSelectedTrap = Trap.TrapType.None;
-					if (PlantTrapPrefab == null)
-					{
-						PlantTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
-					}
-					GameObject newTrapGameObject = GameObject.Instantiate(PlantTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
-					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
-					tile.currentTrap = newTrap;
-					if (tile.parentRoom != null)
-					{
-						tile.parentRoom.AddTrapToRoom(newTrap);
-					}
+					GameObject.Instantiate(PlantTrapPrefab, position, Quaternion.identity);
 					break;
 				}
 			case Trap.TrapType.Marble:
 				{
-					currentSelectedTrap = Trap.TrapType.None;
-					if (MarbleTrapPrefab == null)
-					{
-						MarbleTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
-					}
-					Debug.Log(MarbleTrapPrefab);
-					GameObject newTrapGameObject = GameObject.Instantiate(MarbleTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
-					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
-					tile.currentTrap = newTrap;
-					if (tile.parentRoom != null)
-					{
-						tile.parentRoom.AddTrapToRoom(newTrap);
-					}
-					
+					GameObject.Instantiate(MarbleTrapPrefab, position, Quaternion.identity);
 					break;
 				}
 		}
-		
-	}
-
-	public bool IsTileValid(GameTile tile)
-	{
-		if (tile.GetComponent<BoxCollider>() != null)
-		{
-			return false;
-		}
-
-
-		//door traps need to be on doors
-		if (currentSelectedTrap == Trap.TrapType.Door)
-		{
-			Door doorComponent = tile.transform.parent.GetComponent<Door>();
-			if (doorComponent == null)
-			{
-				return false;
-			}
-		}
-		//regular traps need to be not on doors
-		else
-		{
-			Door doorComponent = tile.transform.parent.GetComponent<Door>();
-			if (doorComponent != null)
-			{
-				return false;
-			}
-		}
-
-		Debug.Log("tile.currentTrap=" + tile.currentTrap);
-		if (tile.currentTrap != null)
-		{
-			
-			return false;
-		}
-
-		return true;
-	}
-
-	public bool IsPlacingTrap()
-	{
-		return ((currentSelectedTrap != Trap.TrapType.None) && (currentSelectedTrap != Trap.TrapType.COUNT));
+		currentSelectedTrap = Trap.TrapType.None;
 	}
 }
