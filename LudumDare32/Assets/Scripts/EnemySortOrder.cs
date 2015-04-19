@@ -7,7 +7,7 @@ public class EnemySortOrder : MonoBehaviour {
 	public GameObject SpriteObject;
 
 
-	void Start () 
+	void Awake () 
 	{
 		levelTopNull = GameObject.FindGameObjectWithTag("levelTopNode");
 	}
