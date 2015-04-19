@@ -19,7 +19,7 @@ public class GameTile : MonoBehaviour
 		{
 			if(_renderer.material != null)
 			{
-				_renderer.material.color = Color.red;
+				_renderer.material.color = Color.green;
 			}
 		}
 	}
@@ -37,31 +37,6 @@ public class GameTile : MonoBehaviour
 			{
 				_renderer.material.color = Color.white;
 			}
-		}
-	}
-
-	void Update() 
-	{
-		if(Input.GetMouseButtonDown(0))
-		{
-			RaycastHit hit;
-			Ray mousePosRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-			if(Physics.Raycast(mousePosRay, out hit))
-			{
-				if(hit.collider == _col)
-				{
-					Debug.Log ("Click is on an object: " + this.gameObject.name);
-				}
-			}
-		}
-		if(Input.GetMouseButtonDown(1))
-		{
-			// Do something else.
-		}
-		if(Input.GetMouseButtonDown(2))
-		{
-			// yeah.
 		}
 	}
 
