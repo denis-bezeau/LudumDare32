@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
 	public int TotalEnemies;
 	private int totalKills = 0;
 	public float energyRegenSpeed = 10.0f;
-	public GameObject EnemyPrefab;
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
 	public Animator Hud;
@@ -209,6 +208,14 @@ public class GameManager : MonoBehaviour
 		UpdateAttackWaves();
 
 		energy += energyRegenSpeed * Time.deltaTime;
+
+		if (energy > 100)
+		{
+			energy = 100;
+		}
+		CTEventManager.FireEvent(new UpdateEnergyEvent() { energy = (int)this.energy });
+
+
 	}
 
 	/// @brief	Manage attack waves
