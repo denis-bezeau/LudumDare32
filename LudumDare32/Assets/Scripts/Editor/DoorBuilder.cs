@@ -7,11 +7,10 @@ using System.Collections;
 public class DoorBuilder : EditorWindow
 {
 	private static bool _isHorizontal = false;
-
+	private static Vector2 _scrollPosition = Vector2.zero;
 	private static Room _room1 = null;
 	private static Room _room2 = null;
-
-	private string _doorName = "door";
+	private static string _doorName = "door";
 
 	private static readonly Vector3 DEFAULT_DOOR_POS = new Vector3 (0f, 0f, -0.01f);
 	private static readonly string kTileSetPath = "Textures/TileSets/";
@@ -22,9 +21,6 @@ public class DoorBuilder : EditorWindow
 	private bool _showNameHelp = false;
 	private bool _showRoomHelp = false;
 	private string _roomHelpString = string.Empty;
-
-
-
 	
 	[MenuItem("LudumDare32/Build Door")]
 	public static void Init ()
@@ -37,7 +33,8 @@ public class DoorBuilder : EditorWindow
 	void OnGUI ()
 	{
 		GUILayout.Label ("Create a new door", EditorStyles.boldLabel);
-		
+
+		_scrollPosition = EditorGUILayout.BeginScrollView (_scrollPosition);
 		_isHorizontal = EditorGUILayout.Toggle ("Is Horizontal: ", _isHorizontal);
 
 		// TODO: we should have this auto increment or something
@@ -86,6 +83,8 @@ public class DoorBuilder : EditorWindow
 		{
 			EditorGUILayout.HelpBox (_roomHelpString, MessageType.Error);
 		}
+
+		EditorGUILayout.EndScrollView ();
 	}
 
 	private bool NameIsUnique ()
