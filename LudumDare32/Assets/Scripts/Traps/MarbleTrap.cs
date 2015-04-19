@@ -14,15 +14,13 @@ public class MarbleTrap : Trap
 	{
 		person.GetComponent<PersonMotion>().m_speedModifier = speedModifier;
 
-		if (hauntedMarbles != null)
-		{
-			hauntedMarbles.isActive = true;
-		}
+		hauntedMarbles.isActive = true;
 	}
 
 	public override void OnExitTrap(PersonAI person)
 	{
 		person.GetComponent<PersonMotion>().m_speedModifier = 1.0f;
+		hauntedMarbles.isActive = false;
 	}
 
 	void OnTriggerEnter(Collider col)

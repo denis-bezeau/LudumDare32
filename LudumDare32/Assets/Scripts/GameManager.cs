@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
 	private Trap.TrapType currentSelectedTrap = Trap.TrapType.None;
 
 	private float _nextAttackWaveTime = 0.0f;
-	private int _attackWaveNumber = 0;
+	private int _attackWaveNumber = 1;
 
 	[SerializeField]
 	private CameraManager _cameraManager;

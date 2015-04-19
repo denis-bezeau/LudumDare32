@@ -7,9 +7,7 @@ public class HauntedMarbles : MonoBehaviour {
 
 	private Animator anim;
 	public GameObject marbleSprite;
-
-
-
+	
 	void Awake () 
 	{
 		anim = marbleSprite.GetComponent<Animator>();
