@@ -60,6 +60,7 @@ public class PersonAI : MonoBehaviour
 	private Door					m_previousDoor = null;								//!< Previous door we came through
 	private Room					m_currentRoom = null;								//!< Current room
 	private float					m_nextDoorBashTime = 0.0f;							//!< Time to bash the door next
+	private PersonStats				m_PersonStats = null;								//!< stats of the person e.g. health
 	
 	/**************************** PUBLIC METHODS ****************************/
 
@@ -87,6 +88,14 @@ public class PersonAI : MonoBehaviour
 		CTEventManager.FireEvent(killEvent);
 
 		StateChange(EAIState.k_dead);
+	}
+
+		//////////////////////////////////////////////////////////////////////////
+	/// @brief	get gameplay stats about the person e.g. health
+	//////////////////////////////////////////////////////////////////////////
+	public PersonStats GetPlayerStats()
+	{
+		return m_PersonStats;
 	}
 	
 	/*************************** PRIVATE METHODS ****************************/

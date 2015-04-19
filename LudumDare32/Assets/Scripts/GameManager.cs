@@ -4,24 +4,62 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour 
 {
+	private static GameManager instance;
+
 	//exposed variables for the user to change
 	public int MaximumEscapeeCount = 10;
 	public int TotalEnemies;
 	public GameObject EnemyPrefab;
 	public GameObject[] EnemySpawnLocations;
+	public Room GoalRoom;
 
 	private int currentEscapeeCount;
 	private GameObject DefaultLevel;
 	private List<PersonAI> Enemies = new List<PersonAI>();
+	private bool musicStarted;
 	private Door _entranceDoor = null;
 	private Door _exitDoor = null;
+
+	public static GameManager GetInstance()
+	{
+		if (instance == null)
+		{
+			GameObject gameManagerGameObject = GameObject.FindGameObjectWithTag("game_manager");
+			if (gameManagerGameObject != null)
+			{
+				instance = gameManagerGameObject.GetComponent<GameManager>();
+				if (instance == null)
+				{
+					instance = gameManagerGameObject.AddComponent<GameManager>();
+				}
+			}
+			else
+			{
+				gameManagerGameObject = new GameObject();
+				gameManagerGameObject.name = "game_manager";
+				gameManagerGameObject.tag = "game_manager";
+				instance = gameManagerGameObject.AddComponent<GameManager>();
+			}
+		}
+		return instance;
+	}
+
+	void Start()
+	{
+		ResetGameSettings();
+	}
 
 	public void Awake()
 	{
 		CTEventManager.AddListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent>(OnRestartGame);
 		CTEventManager.AddListener<EscapeEvent>(OnEscapeEvent);
-		ResetGameSettings();
+
+		PlayerPrefs.SetFloat("sfxVolume", 1.0f);
+		PlayerPrefs.SetFloat("musicVolume", 0.02f);
+		PlayerPrefs.SetFloat("speechVolume", 0.85f);
+
+		SoundManager.GetInstance();
 	}
 
 	public void OnDestroy()
@@ -81,6 +119,12 @@ public class GameManager : MonoBehaviour
 		while (levelLoadOperation.isDone == false)
 		{
 			yield return null;
+		}
+
+		if (musicStarted == false)
+		{
+			CTEventManager.FireEvent(new PlayMusicEvent() { assetName = "audio/music/climactic-final-battle" });
+			musicStarted = true;
 		}
 
 		DefaultLevel = GameObject.FindGameObjectWithTag("LEVEL");

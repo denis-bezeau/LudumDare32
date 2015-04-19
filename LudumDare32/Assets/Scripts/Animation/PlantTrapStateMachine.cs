@@ -2,9 +2,10 @@
 using System.Collections;
 using System;
 
-public class AnimBase : StateMachineBehaviour 
+public class PlantTrapStateMachine : StateMachineBehaviour 
 {
-	[SerializeField] private eAnimTypes _animType;
+	[SerializeField]
+	private eAnimTypes _animType;
 
 	public Action<eAnimTypes> OnAnimFinished = delegate {};
 	public Action<eAnimTypes> OnAnimStarted = delegate {};
@@ -21,19 +22,20 @@ public class AnimBase : StateMachineBehaviour
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
 	{
-		if (_animType == eAnimTypes.Idle)
-		{
-			//check parameter
-			animator.SetInteger("adsgad", 1);
-		}
-
 		OnAnimUpdate(_animType);
 	}
 
 	// OnStateExit is called when a transition ends and the state machine finishes evaluating this state
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) 
 	{
-		OnAnimFinished(_animType);
+		//Debug.Log("OnStateExit: " + _animType);
+		//Debug.Log("stateInfo.fullPathHash: " + stateInfo.fullPathHash);
+		//Debug.Log("stateInfo.nameHash: " + stateInfo.nameHash);
+		//Debug.Log("Animator.StringToHash(Base.Execute): " + Animator.StringToHash("Base Layer.Execute"));
+		if (stateInfo.fullPathHash == Animator.StringToHash("Base Layer.Execute"))
+		{
+			OnAnimFinished(_animType);
+		}
 	}
 
 	// OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here

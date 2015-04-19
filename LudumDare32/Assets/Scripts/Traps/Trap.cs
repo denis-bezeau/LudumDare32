@@ -25,7 +25,7 @@ public class Trap : MonoBehaviour
 	/// <summary>
 	/// What to do when a new person enters the room
 	/// </summary>
-	public void OnEnterTrap ()
+	public virtual void OnEnterTrap ()
 	{
 		
 	}
@@ -33,7 +33,7 @@ public class Trap : MonoBehaviour
 	/// <summary>
 	/// What to do when a person exits a room
 	/// </summary>
-	public void OnExitTrap ()
+	public virtual void OnExitTrap()
 	{
 		
 	}

@@ -85,7 +85,7 @@ public class Room : MonoBehaviour
 	/// <summary>
 	/// What to do when a new person enters the room
 	/// </summary>
-	public void OnEnterRoom ()
+	public virtual void OnEnterRoom(PersonAI person)
 	{
 
 	}
@@ -93,7 +93,7 @@ public class Room : MonoBehaviour
 	/// <summary>
 	/// What to do when a person exits a room
 	/// </summary>
-	public void OnExitRoom ()
+	public virtual void OnExitRoom(PersonAI person)
 	{
 
 	}
@@ -161,6 +161,11 @@ public class Room : MonoBehaviour
 		
 		// We haven't found a path through here to the exit
 		return false;
+	}
+
+	public List<PersonAI> GetPeople()
+	{
+		return _people;
 	}
 
 }
