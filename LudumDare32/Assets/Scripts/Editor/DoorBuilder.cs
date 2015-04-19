@@ -262,6 +262,11 @@ public class DoorBuilder : EditorWindow
 				RemoveBehindTile (gT);
 			}
 		}
+
+		// Now that the room tiles are gone, we can flatten these out
+		Vector3 newPos = selectedDoor.gameObject.transform.position;
+		newPos.z = 0.0f;
+		selectedDoor.gameObject.transform.position = newPos;
 	}
 
 	private void ToggleDoorsMeshRenderer ()
