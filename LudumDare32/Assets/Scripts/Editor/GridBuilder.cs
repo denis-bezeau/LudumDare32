@@ -114,6 +114,7 @@ public class GridBuilder : EditorWindow
 		
 		// Build the Room Collider
 		BoxCollider col = roomObj.gameObject.AddComponent<BoxCollider> ();
+		col.isTrigger = true;
 		
 		// Height is X, width is Y
 		col.size = new Vector3 (kTileHeight * _roomHeightTiles, kTileWidth * _roomWidthTiles, kZDepth);
