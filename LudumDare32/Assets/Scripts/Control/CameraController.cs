@@ -11,13 +11,13 @@ public class CameraController : MonoBehaviour
 	private Vector3 lastPosition;
 	private Vector3 cameraStartPos;
 	private Vector3 cameraWorldPos;
-	
+
 	void Start()
 	{
 		cameraStartPos = this.transform.position;
 	}
 	
-	void FixedUpdate()
+	void LateUpdate()
 	{
 		cameraWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -35,12 +35,25 @@ public class CameraController : MonoBehaviour
 			float totalDeltaX = dX + transform.position.x;
 			float totalDeltaY = dY + transform.position.y;
 
-			if (Mathf.Abs (totalDeltaX - cameraStartPos.x) < maxDeltaX && Mathf.Abs(totalDeltaY - cameraStartPos.y) < maxDeltaY)
+			if (Mathf.Abs (totalDeltaX - cameraStartPos.x) < maxDeltaX)
 			{
-				transform.Translate(dX, dY, 0);
-				lastPosition = cameraWorldPos;
+				transform.Translate(dX, 0, 0);
+				lastPosition.x = cameraWorldPos.x;
+			}
+			else
+			{
+				lastPosition.x = maxDeltaX * Mathf.Sign (totalDeltaX - cameraStartPos.x);
+			}
+
+			if (Mathf.Abs(totalDeltaY - cameraStartPos.y) < maxDeltaY)
+			{
+				transform.Translate(0, dY, 0);
+				lastPosition.y = cameraWorldPos.y;
+			}
+			else
+			{
+				lastPosition.y = maxDeltaY * Mathf.Sign (totalDeltaY - cameraStartPos.y);
 			}
 		}
 	}
 }
-
