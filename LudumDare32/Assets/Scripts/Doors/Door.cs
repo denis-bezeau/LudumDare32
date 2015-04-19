@@ -37,10 +37,7 @@ public class Door : MonoBehaviour
 
 	public void Awake ()
 	{
-		if (_room1 == null || _room2 == null)
-		{
-			Debug.LogError (this.name + ": Doors need to be attached to two rooms!");
-		}
+		IsDoorInfoGood ();
 
 		_doorCollider = GetComponent<BoxCollider> ();
 		if (_doorCollider != null)
@@ -88,12 +85,43 @@ public class Door : MonoBehaviour
 
 	public bool IsDoorInfoGood ()
 	{
+		bool isGood = true;
 		if (_room1 == null || _room2 == null)
 		{
-			return false;
+			Debug.LogError (this.name + " needs to attach two rooms: " + _room1 + " " + _room2);
+			isGood = false;
 		}
 
-		return true;
+		if (_room1 != null && !_room1.CheckForDoorInRoom (this))
+		{
+			Debug.LogError (this.name + " is not in door list of " + _room1);
+			isGood = false;
+		}
+
+		if (_room2 != null && !_room2.CheckForDoorInRoom (this))
+		{
+			Debug.LogError (this.name + " is not in door list of " + _room2);
+			isGood = false;
+		}
+
+		GameTile[] tiles = GetComponentsInChildren<GameTile> ();
+		if (tiles.Length > 1)
+		{
+			Debug.LogWarning ("Doors with two tiles are deprecated, please replace " + this.name);
+			isGood = false;
+		}
+		
+		return isGood;
+	}
+
+	public bool IsHorizontal {
+		get {
+			GameTile tile = GetComponentInChildren<GameTile> ();
+			if (tile == null)
+				return false;
+			else
+				return (tile.transform.localScale.x > tile.transform.localScale.y);
+		}
 	}
 }
 

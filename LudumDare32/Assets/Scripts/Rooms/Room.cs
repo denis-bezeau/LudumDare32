@@ -13,9 +13,9 @@ public class Room : MonoBehaviour
 		_doors;
 
 	[SerializeField]
-	protected List<GameTile> _tiles;
-	public List<GameTile> GameTiles
-	{
+	protected List<GameTile>
+		_tiles;
+	public List<GameTile> GameTiles {
 		get { return _tiles; }
 		set { _tiles = value; }
 	}
@@ -219,6 +219,11 @@ public class Room : MonoBehaviour
 	public List<PersonAI> GetPeople ()
 	{
 		return _people;
+	}
+
+	public bool CheckForDoorInRoom (Door d)
+	{
+		return _doors.Contains (d);
 	}
 
 }

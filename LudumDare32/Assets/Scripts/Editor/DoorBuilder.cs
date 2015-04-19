@@ -12,8 +12,7 @@ public class DoorBuilder : EditorWindow
 	private static Room _room1 = null;
 	private static Room _room2 = null;
 	private static string _doorName = "door";
-
-	private static readonly Vector3 DEFAULT_DOOR_POS = new Vector3 (0f, 0f, -0.01f);
+	
 	private static readonly string kTileSetPath = "Textures/TileSets/";
 	private static readonly string kTileSetMatPath = "Materials";
 
@@ -142,8 +141,6 @@ public class DoorBuilder : EditorWindow
 			EditorGUILayout.HelpBox ("Are you sure? Will remove underlying walls.", MessageType.Warning);
 		}
 
-
-
 		EditorGUILayout.EndScrollView ();
 	}
 
@@ -164,7 +161,7 @@ public class DoorBuilder : EditorWindow
 		{
 			_doorPrefab = Resources.Load ("Prefabs/VerticalDoor") as GameObject;
 		}
-		
+
 		GameObject doorObj = GameObject.Find (_doorName);
 		if (doorObj == null)
 		{
@@ -176,8 +173,9 @@ public class DoorBuilder : EditorWindow
 			return;
 		}
 
-		doorObj.transform.localPosition = DEFAULT_DOOR_POS;
+		doorObj.transform.localPosition = Vector3.zero;
 		doorObj.name = _doorName;
+
 
 		// Set tile textures
 		GameTile[] tiles = doorObj.GetComponentsInChildren<GameTile> ();
@@ -200,6 +198,9 @@ public class DoorBuilder : EditorWindow
 		// Add the door to the rooms
 		AddDoorToRoom (theDoor, _room1);
 		AddDoorToRoom (theDoor, _room2);
+
+		// And finally, select
+		Selection.activeGameObject = doorObj;
 	}
 
 	private void RemoveMissingDoors ()
@@ -256,10 +257,26 @@ public class DoorBuilder : EditorWindow
 		Door selectedDoor = Selection.activeGameObject.GetComponent<Door> ();
 		if (selectedDoor != null)
 		{
-			GameTile[] tiles = selectedDoor.GetComponentsInChildren<GameTile> ();
-			foreach (GameTile gT in tiles)
+			Vector3 checkPos = selectedDoor.gameObject.transform.position;
+
+			// Don't remove your own, move for now
+			checkPos.z = -1f;
+			selectedDoor.gameObject.transform.position = checkPos;
+			checkPos.z = -.5f;
+
+			if (selectedDoor.IsHorizontal)
 			{
-				RemoveBehindTile (gT);
+				checkPos.x -= .5f;
+				RemoveBehindPoint (checkPos);
+				checkPos.x += 1f;
+				RemoveBehindPoint (checkPos);
+			}
+			else
+			{
+				checkPos.y -= .5f;
+				RemoveBehindPoint (checkPos);
+				checkPos.y += 1f;
+				RemoveBehindPoint (checkPos);
 			}
 		}
 
@@ -277,7 +294,7 @@ public class DoorBuilder : EditorWindow
 
 		foreach (Door d in allDoors)
 		{
-			MeshRenderer[] meshRenderers = d.GetComponentsInChildren<MeshRenderer>();
+			MeshRenderer[] meshRenderers = d.GetComponentsInChildren<MeshRenderer> ();
 			//Debug.Log(d);
 
 			foreach (MeshRenderer m in meshRenderers)
@@ -288,10 +305,10 @@ public class DoorBuilder : EditorWindow
 		}
 	}
 
-	private void RemoveBehindTile (GameTile tile)
+	private void RemoveBehindPoint (Vector3 point)
 	{
 		RaycastHit hit;
-		Ray detectBehind = new Ray (tile.transform.position, new Vector3 (0f, 0f, 1f));
+		Ray detectBehind = new Ray (point, new Vector3 (0f, 0f, 1f));
 		
 		if (Physics.Raycast (detectBehind, out hit))
 		{
