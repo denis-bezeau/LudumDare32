@@ -37,26 +37,33 @@ public class Room : MonoBehaviour
 		}
 		else
 		{
-			List<Door> badDoors = new List<Door> ();
-			foreach (Door d in _doors)
-			{
-				if (d == null)
-				{
-					Debug.LogWarning ("Missing Door! Clean up doors in " + this.name);
-
-					// Can't modify the list while interating
-					badDoors.Add (d);
-				}
-			}
-
-			// Get rid of them
-			foreach (Door bd in badDoors)
-			{
-				_doors.Remove (bd);
-			}
+			RemoveBadDoors ();
 		}
 	}
 
+	public int RemoveBadDoors ()
+	{
+		List<Door> badDoors = new List<Door> ();
+		foreach (Door d in _doors)
+		{
+			if (d == null)
+			{
+				Debug.LogWarning ("Missing Door! Clean up doors in " + this.name);
+				
+				// Can't modify the list while interating
+				badDoors.Add (d);
+			}
+		}
+		
+		// Get rid of them
+		foreach (Door bd in badDoors)
+		{
+			_doors.Remove (bd);
+		}
+
+		return badDoors.Count;
+	}
+	
 	public void OnCollisionEnter (Collision col)
 	{
 		PersonAI person = col.gameObject.GetComponent<PersonAI> ();

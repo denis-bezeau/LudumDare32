@@ -46,21 +46,29 @@ public class DoorBuilder : EditorWindow
 			if (!NameIsUnique ())
 			{
 				_showNameHelp = true;
-			} else if (_room1 == _room2)
+			}
+			else if (_room1 == _room2)
 			{
 				_showRoomHelp = true;
 				_roomHelpString = "Connected rooms cannot be the same";
-			} else if (_room1 == null || _room2 == null)
+			}
+			else if (_room1 == null || _room2 == null)
 			{
 				_showRoomHelp = true;
 				_roomHelpString = "Door must connect to two rooms";
-			} else
+			}
+			else
 			{
 				// Everything is fine! Build!
 				_showNameHelp = false;
 				_showRoomHelp = false;
 				BuildDoor ();
 			}
+		}
+
+		if (GUILayout.Button ("Remove missing doors"))
+		{
+			RemoveMissingDoors ();
 		}
 
 		// Error displays
@@ -84,7 +92,8 @@ public class DoorBuilder : EditorWindow
 		if (_isHorizontal)
 		{
 			_doorPrefab = Resources.Load ("Prefabs/HorizontalDoor") as GameObject;
-		} else
+		}
+		else
 		{
 			_doorPrefab = Resources.Load ("Prefabs/VerticalDoor") as GameObject;
 		}
@@ -93,7 +102,8 @@ public class DoorBuilder : EditorWindow
 		if (doorObj == null)
 		{
 			doorObj = GameObject.Instantiate (_doorPrefab);
-		} else
+		}
+		else
 		{
 			Debug.LogError ("We already have door: " + doorObj.name);
 			return;
@@ -106,7 +116,8 @@ public class DoorBuilder : EditorWindow
 		if (theDoor != null)
 		{
 			theDoor.SetConnectedRooms (_room1, _room2);
-		} else
+		}
+		else
 		{
 			Debug.LogError ("Door prefab needs a door component.");
 		}
@@ -116,12 +127,22 @@ public class DoorBuilder : EditorWindow
 		AddDoorToRoom (theDoor, _room2);
 	}
 
+	private void RemoveMissingDoors ()
+	{
+		Room[] sceneRooms = GameObject.FindObjectsOfType<Room> ();
+		foreach (Room r in sceneRooms)
+		{
+			Debug.Log (r.name + " dad doors cleaned up: " + r.RemoveBadDoors ());
+		}
+	}
+
 	private void AddDoorToRoom (Door d, Room r)
 	{
 		if (r.AddDoorToRoom (d))
 		{
 			EditorUtility.SetDirty (r);
-		} else
+		}
+		else
 		{
 			Debug.LogError ("Failed to add door to " + r.name);
 		}
