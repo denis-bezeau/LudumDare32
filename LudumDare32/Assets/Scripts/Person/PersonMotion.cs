@@ -172,7 +172,7 @@ public class PersonMotion : MonoBehaviour
 		float dist = delta.magnitude;
 
 		// Have we arrived at the door?
-		if(dist < (m_collider.radius*transform.localScale.x))//k_minDistance)
+		if(dist < (m_collider.radius*2.0f*transform.localScale.x))//k_minDistance)
 		{
 			// Yes - stop and wait for another target
 			StateChange(EMotionState.k_waitForTarget);
