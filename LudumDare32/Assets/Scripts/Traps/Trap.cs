@@ -3,6 +3,14 @@ using System.Collections.Generic;
 
 public class Trap : MonoBehaviour
 {
+	public enum TrapType
+	{
+		None,
+		Plant,
+		Marble,
+		Door,
+		COUNT
+	}
 
 	protected const string _title = "default";
 	public virtual string Title { get { return _title; } }

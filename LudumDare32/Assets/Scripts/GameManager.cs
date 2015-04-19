@@ -9,9 +9,15 @@ public class GameManager : MonoBehaviour
 	//exposed variables for the user to change
 	public int MaximumEscapeeCount = 10;
 	public int TotalEnemies;
+	public float energyRegenSpeed = 10.0f;
 	public GameObject EnemyPrefab;
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
+	public Animator Hud;
+	public GameObject PlantTrapPrefab;
+	public GameObject MarbleTrapPrefab;
+	public GameObject DoorTrapPrefab;
+
 
 	private int currentEscapeeCount;
 	private GameObject DefaultLevel;
@@ -19,6 +25,9 @@ public class GameManager : MonoBehaviour
 	private bool musicStarted;
 	private Door _entranceDoor = null;
 	private Door _exitDoor = null;
+	private int [] trapCosts;
+	private float energy;
+	private Trap.TrapType currentSelectedTrap = Trap.TrapType.None;
 
 	public static GameManager GetInstance()
 	{
@@ -54,12 +63,15 @@ public class GameManager : MonoBehaviour
 		CTEventManager.AddListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent>(OnRestartGame);
 		CTEventManager.AddListener<EscapeEvent>(OnEscapeEvent);
+		CTEventManager.AddListener<BuyTrapEvent>(OnBuyTrapEvent);
+		CTEventManager.AddListener<PlaceTrapEvent>(OnPlaceTrapEvent);
 
 		PlayerPrefs.SetFloat("sfxVolume", 1.0f);
 		PlayerPrefs.SetFloat("musicVolume", 0.02f);
 		PlayerPrefs.SetFloat("speechVolume", 0.85f);
 
 		SoundManager.GetInstance();
+		SetUpTrapData();
 	}
 
 	public void OnDestroy()
@@ -67,6 +79,8 @@ public class GameManager : MonoBehaviour
 		CTEventManager.RemoveListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.RemoveListener<RestartGameEvent>(OnRestartGame);
 		CTEventManager.RemoveListener<EscapeEvent>(OnEscapeEvent);
+		CTEventManager.RemoveListener<BuyTrapEvent>(OnBuyTrapEvent);
+		CTEventManager.RemoveListener<PlaceTrapEvent>(OnPlaceTrapEvent);
 	}
 
 	public void OnKillEnemyEvent(KillEnemyEvent eventData)
@@ -97,6 +111,8 @@ public class GameManager : MonoBehaviour
 
 	private void ResetGameSettings()
 	{
+		
+
 		for(int i = 0; i < Enemies.Count; ++i)
 		{
 			GameObject.Destroy(Enemies[i].gameObject);
@@ -105,6 +121,8 @@ public class GameManager : MonoBehaviour
 		Enemies.Clear();
 
 		StartCoroutine(ReLoadLevel());
+
+		ShowHud();
 
 		currentEscapeeCount = 0;
 	}
@@ -164,5 +182,88 @@ public class GameManager : MonoBehaviour
 	public void YouLose()
 	{
 		Application.LoadLevel("YouLose");
+	}
+
+	void ShowHud()
+	{
+		Hud.SetBool("Show", true);
+	}
+
+	public void Update()
+	{
+		energy += energyRegenSpeed * Time.deltaTime;
+	}
+
+	public void SetUpTrapData()
+	{
+		energy = 0;
+
+		trapCosts = new int [(int)Trap.TrapType.COUNT];
+		trapCosts[(int)Trap.TrapType.Door] = 10;
+		trapCosts[(int)Trap.TrapType.Plant] = 30;
+		trapCosts[(int)Trap.TrapType.Marble] = 20;
+	}
+
+	public int GetTrapCost(Trap.TrapType type)
+	{
+		return trapCosts[(int)type];
+	}
+
+	public void OnBuyTrapEvent(BuyTrapEvent eventData)
+	{
+		int cost = GetTrapCost(eventData.type);
+		if (cost < energy)
+		{
+			currentSelectedTrap = eventData.type;
+			Debug.Log("current selected trap = " + eventData.type);
+		}
+		else
+		{
+			Debug.Log("not enough mana!");
+		}
+	}
+
+	public void OnPlaceTrapEvent(PlaceTrapEvent eventData)
+	{
+		Debug.Log("OnPlaceTrapEvent");
+		if (currentSelectedTrap != Trap.TrapType.None)
+		{
+			Debug.Log("OnPlaceTrapEvent currentSelectedTrap =" + currentSelectedTrap);
+			int cost = GetTrapCost(currentSelectedTrap);
+			if (cost < energy)
+			{
+				Debug.Log("OnPlaceTrapEvent cost =" + cost + " , energy=" + energy);
+				energy -= (float)cost;
+				InstantiateTrapAtLocation(currentSelectedTrap, eventData.position);
+			}
+		}
+		else
+		{
+			currentSelectedTrap = Trap.TrapType.None;
+		}
+	}
+	
+	public void InstantiateTrapAtLocation(Trap.TrapType type, Vector3 position)
+	{
+		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + position);
+		switch (type)
+		{
+			case Trap.TrapType.Door:
+				{
+					GameObject.Instantiate(DoorTrapPrefab, position, Quaternion.identity);
+					break;
+				}
+			case Trap.TrapType.Plant:
+				{
+					GameObject.Instantiate(PlantTrapPrefab, position, Quaternion.identity);
+					break;
+				}
+			case Trap.TrapType.Marble:
+				{
+					GameObject.Instantiate(MarbleTrapPrefab, position, Quaternion.identity);
+					break;
+				}
+		}
+		currentSelectedTrap = Trap.TrapType.None;
 	}
 }

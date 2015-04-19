@@ -24,6 +24,11 @@ public class GameTile : MonoBehaviour
 		}
 	}
 
+	void OnMouseUp()
+	{
+		CTEventManager.FireEvent(new PlaceTrapEvent() { position = transform.position });
+	}
+
 	void OnMouseOver()
 	{
 
