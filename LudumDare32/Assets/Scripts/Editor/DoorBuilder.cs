@@ -14,11 +14,17 @@ public class DoorBuilder : EditorWindow
 	private string _doorName = "door";
 
 	private static readonly Vector3 DEFAULT_DOOR_POS = new Vector3 (0f, 0f, -0.01f);
+	private static readonly string kTileSetPath = "Textures/TileSets/";
+	private static readonly string kTileSetMatPath = "Materials";
 
+	private GameEnums.TileSet _tileSet = GameEnums.TileSet.TileSet1;
 	private GameObject _doorPrefab;
 	private bool _showNameHelp = false;
 	private bool _showRoomHelp = false;
 	private string _roomHelpString = string.Empty;
+
+
+
 	
 	[MenuItem("LudumDare32/Build Door")]
 	public static void Init ()
@@ -89,6 +95,8 @@ public class DoorBuilder : EditorWindow
 
 	private void BuildDoor ()
 	{
+		string rootTexPath = kTileSetPath + _tileSet.ToString () + "/" + kTileSetMatPath + "/";
+
 		if (_isHorizontal)
 		{
 			_doorPrefab = Resources.Load ("Prefabs/HorizontalDoor") as GameObject;
@@ -111,6 +119,14 @@ public class DoorBuilder : EditorWindow
 
 		doorObj.transform.localPosition = DEFAULT_DOOR_POS;
 		doorObj.name = _doorName;
+
+		// Set tile textures
+		GameTile[] tiles = doorObj.GetComponentsInChildren<GameTile> ();
+		foreach (GameTile gT in tiles)
+		{
+			// TODO: We are just using the floor for right now
+			gT.SetTexture (rootTexPath + "Floor_01");
+		}
 
 		Door theDoor = doorObj.GetComponent<Door> ();
 		if (theDoor != null)
