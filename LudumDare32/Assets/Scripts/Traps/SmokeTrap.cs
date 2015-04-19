@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class SmokeTrap : RoomTrap
 {
-	private const string _title = "Smoke Trap";
-	public virtual string Title { get { return _title; } }
+	private new const string _title = "Smoke Trap";
+	public override string Title { get { return _title; } }
 	
 	private const int _cost = 30;
-	public virtual int Cost { 
+	public override int Cost { 
 		get { return _cost; } 
 	}
 
