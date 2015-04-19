@@ -21,6 +21,7 @@ public class DoorBuilder : EditorWindow
 	private bool _showNameHelp = false;
 	private bool _showRoomHelp = false;
 	private string _roomHelpString = string.Empty;
+	private bool _isSure = false;
 	
 	[MenuItem("LudumDare32/Build Door")]
 	public static void Init ()
@@ -29,7 +30,13 @@ public class DoorBuilder : EditorWindow
 		DoorBuilder window = ScriptableObject.CreateInstance<DoorBuilder> ();
 		window.Show ();
 	}
-	
+
+	void OnSelectionChange ()
+	{
+		// Make sure we update when selection is new
+		Repaint ();
+	}
+
 	void OnGUI ()
 	{
 		GUILayout.Label ("Create a new door", EditorStyles.boldLabel);
@@ -72,6 +79,37 @@ public class DoorBuilder : EditorWindow
 		if (GUILayout.Button ("Remove missing doors"))
 		{
 			RemoveMissingDoors ();
+		}
+
+		GameObject gO = Selection.activeGameObject;
+		Door selectedDoor = null;
+		if (gO != null)
+		{
+			selectedDoor = gO.GetComponent<Door> ();
+		}
+
+		// This section is for removing hidden walls behind new doors
+		if (!_isSure && selectedDoor != null)
+		{
+			if (GUILayout.Button ("Delete hidden walls"))
+			{
+				_isSure = true;
+			}
+		}
+		else if (selectedDoor != null)
+		{
+			EditorGUILayout.BeginHorizontal ();
+			if (GUILayout.Button ("Continue"))
+			{
+				RemoveHiddenWalls ();
+				_isSure = false;
+			}
+			if (GUILayout.Button ("Reset"))
+			{
+				_isSure = false;
+			}
+			EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.HelpBox ("Are you sure? Will remove underlying walls.", MessageType.Warning);
 		}
 
 		// Error displays
@@ -148,6 +186,34 @@ public class DoorBuilder : EditorWindow
 		foreach (Room r in sceneRooms)
 		{
 			Debug.Log (r.name + " dad doors cleaned up: " + r.RemoveBadDoors ());
+		}
+	}
+
+	private void RemoveHiddenWalls ()
+	{
+		Debug.Log ("TODO: Remove hidden walls...");
+
+		Door selectedDoor = Selection.activeGameObject.GetComponent<Door> ();
+		if (selectedDoor != null)
+		{
+			GameTile[] tiles = selectedDoor.GetComponentsInChildren<GameTile> ();
+			foreach (GameTile gT in tiles)
+			{
+				RemoveHiddenTiles (gT);
+			}
+		}
+	}
+
+	private void RemoveHiddenTiles (GameTile tile)
+	{
+		RaycastHit hit;
+		Ray detectBehind = new Ray (tile.transform.position, new Vector3 (0f, 0f, 1f));
+		
+		if (Physics.Raycast (detectBehind, out hit))
+		{
+			GameObject obj = hit.collider.gameObject;
+			Debug.Log ("Removing tile: " + obj.name);
+			Undo.DestroyObjectImmediate (obj);
 		}
 	}
 
