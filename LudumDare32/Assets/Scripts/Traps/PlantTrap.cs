@@ -7,12 +7,12 @@ using System.Collections.Generic;
 public class PlantTrap : Trap
 {
 	public int Damage;
-
 	private TendrilTriggerOffset tendrilTrigger = null;
 
 	public void Awake()
 	{
 		tendrilTrigger = GetComponent<TendrilTriggerOffset>();
+		OnEnterTrap(null);
 	}
 
 	public override void OnEnterTrap(PersonAI person)
@@ -25,14 +25,20 @@ public class PlantTrap : Trap
 			tendrilTrigger.isAttack = true;
 		}
 
-		List<PersonAI> people = _parentRoom.GetPeople();
-		for (int i = 0; i < people.Count; ++i)
+		if (_parentRoom)
 		{
-			Debug.Log("people[" + i + "] doing damage");
+			List<PersonAI> people = _parentRoom.GetPeople();
+			for (int i = 0; i < people.Count; ++i)
+			{
+				
 
-			PersonStats stats = people[i].GetPlayerStats();
-			stats.HP -= Damage;
-			people[i].SetPlayerStats(stats);
+				PersonStats stats = people[i].GetPlayerStats();
+				stats.HP -= Damage;
+				people[i].SetPlayerStats(stats);
+
+				Debug.Log("people[" + i + "] doing damage, current hp = " + stats.HP);
+			}
 		}
+
 	}
 }

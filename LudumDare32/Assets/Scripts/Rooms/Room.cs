@@ -96,24 +96,34 @@ public class Room : MonoBehaviour
 		
 		return badTiles.Count;
 	}
-	
-	public void OnCollisionEnter (Collision col)
+
+	public void OnTriggerEnter(Collider col)
 	{
 		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
 		if (person != null)
 		{
 			Debug.Log ("Person entered room");
 			_people.Add (person);
+
+			for (int i = 0; i < _traps.Count; ++i)
+			{
+				_traps[i].OnEnterTrap(person);
+			}
 		}
 	}
 
-	public void OnCollisionExit (Collision col)
+	public void OnTriggerExit (Collider col)
 	{
 		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
 		if (person != null)
 		{
 			Debug.Log ("Person left room");
 			_people.Remove (person);
+
+			for (int i = 0; i < _traps.Count; ++i)
+			{
+				_traps[i].OnExitTrap(person);
+			}
 		}
 	}
 

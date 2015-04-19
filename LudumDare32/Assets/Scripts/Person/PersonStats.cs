@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PersonStats : MonoBehaviour
 {
-	private int hp = 30;
+	private int hp = 5;
 
 	public int HP
 	{
@@ -14,7 +14,8 @@ public class PersonStats : MonoBehaviour
 
 			if (hp <= 0)
 			{
-				CTEventManager.FireEvent(new KillEnemyEvent());
+				PersonAI person=  GetComponent<PersonAI>();
+				person.Kill();
 			}
 		}
 	

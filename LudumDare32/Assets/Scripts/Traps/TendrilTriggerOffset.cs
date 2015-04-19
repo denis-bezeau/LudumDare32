@@ -40,7 +40,7 @@ public class TendrilTriggerOffset : MonoBehaviour {
 
 	void tendrilAttack(int tendrilNum)
 	{
-		Debug.Log (tendrilNum);
+	//	Debug.Log (tendrilNum);
 		Animator anim = tendrils[tendrilNum].GetComponent<Animator>();
 		anim.SetTrigger ("Attack");
 	}

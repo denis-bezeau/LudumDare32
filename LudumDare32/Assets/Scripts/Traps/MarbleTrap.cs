@@ -1,20 +1,25 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Type of trap that affects an entire room
-/// </summary>
 public class MarbleTrap : Trap
 {
-	public Room _parentRoom;
+	public float speedModifier = 0.5f;
+	private HauntedMarbles hauntedMarbles = null;
 
-	public float speedModifier;
+	public void Awake()
+	{
+		hauntedMarbles = GetComponent<HauntedMarbles>();
+		OnEnterTrap(null);
 
-	
-
+	}
 	public override void OnEnterTrap(PersonAI person)
 	{
 		person.GetComponent<PersonMotion>().m_speedModifier = speedModifier;
+
+		if (hauntedMarbles != null)
+		{
+			hauntedMarbles.isActive = true;
+		}
 	}
 
 	public override void OnExitTrap(PersonAI person)

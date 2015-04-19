@@ -37,7 +37,7 @@ public class CameraController : MonoBehaviour
 			float totalDeltaX = dX + transform.position.x;
 			float totalDeltaY = dY + transform.position.y;
 
-			Debug.Log (totalDeltaX);
+			//Debug.Log (totalDeltaX);
 
 			if (Mathf.Abs (totalDeltaX) < maxDeltaX + Mathf.Abs (LevelCenter.x))
 			{

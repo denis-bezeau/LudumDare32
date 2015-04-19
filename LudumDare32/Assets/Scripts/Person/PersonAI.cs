@@ -85,6 +85,7 @@ public class PersonAI : MonoBehaviour
 	//////////////////////////////////////////////////////////////////////////
 	public void Kill()
 	{
+		Debug.Log("kill");
 		KillEnemyEvent killEvent = new KillEnemyEvent();
 		killEvent.count = 1;
 		killEvent.enemy = this;
@@ -118,6 +119,7 @@ public class PersonAI : MonoBehaviour
 	{
 		// Find other components on the same game object
 		m_personMotion = GetComponent<PersonMotion>();
+		m_PersonStats = GetComponent<PersonStats>();
 	}
 	
 	//////////////////////////////////////////////////////////////////////////

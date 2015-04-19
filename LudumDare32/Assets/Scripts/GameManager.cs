@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
 	//exposed variables for the user to change
 	public int MaximumEscapeeCount = 10;
 	public int TotalEnemies;
+	private int totalKills = 0;
 	public float energyRegenSpeed = 10.0f;
 	public GameObject EnemyPrefab;
 	public GameObject[] EnemySpawnLocations;
@@ -106,8 +107,8 @@ public class GameManager : MonoBehaviour
 	public void OnKillEnemyEvent(KillEnemyEvent eventData)
 	{
 		Enemies.Remove(eventData.enemy);
-
-		if (Enemies.Count <= 0)
+		totalKills += eventData.count;
+		if (totalKills  >= TotalEnemies)
 		{
 			YouWin();
 		}
@@ -225,42 +226,42 @@ public class GameManager : MonoBehaviour
 					// Does the spawn room have tiles we can use to position new enemies?
 					int numEnemies = 0;
 					List<GameTile> spawnTiles = _spawnRoom.GameTiles;
-
+					
 #if false
 					if((spawnTiles != null) && (spawnTiles.Count > 0))
 					{
 						// Generate enemies on room tiles
-						foreach(GameTile tile in spawnTiles)
+					foreach(GameTile tile in spawnTiles)
+					{
+						if(!tile.IsWallTile)
 						{
-							if(!tile.IsWallTile)
-							{
-								SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
-								
-								// Got enough for attack wave?
-								numEnemies++;
-								if(numEnemies >= attackWaves[_attackWaveNumber].count)
-									break;
-							}
+							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
+							
+							// Got enough for attack wave?
+							numEnemies++;
+							if(numEnemies >= attackWaves[_attackWaveNumber].count)
+								break;
 						}
+					}
 					}
 					else
 #endif
 					{
-						// Spawn enemies in centre pf the spawn room
-						BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
-						if(spawnBox != null)
+					// Spawn enemies in centre pf the spawn room
+					BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
+					if(spawnBox != null)
+					{
+						for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
 						{
-							for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
-							{
 								// 80% of box size used to avoid walls
 								Vector3 min = spawnBox.center-(spawnBox.size*0.4f);	
 								Vector3 pos = new Vector3(min.x+(spawnBox.size.x*UnityEngine.Random.value*0.8f),
 								                          min.y+(spawnBox.size.y*UnityEngine.Random.value*0.8f),
 								                          min.z+(spawnBox.size.z*UnityEngine.Random.value*0.8f));
 								SpawnEnemy(attackWaves[_attackWaveNumber].prefab, pos, attackWaves[_attackWaveNumber].personality);
-							}
 						}
 					}
+				}
 				}
 				
 				_nextAttackWaveTime = Time.time + attackWaves[_attackWaveNumber].duration;
@@ -371,7 +372,7 @@ public class GameManager : MonoBehaviour
 					currentSelectedTrap = Trap.TrapType.None;
 					if (MarbleTrapPrefab == null)
 					{
-						MarbleTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
+						MarbleTrapPrefab = Resources.Load("Prefabs/traps/MarbleTrap/MarbleTrap") as GameObject;
 					}
 					Debug.Log(MarbleTrapPrefab);
 					GameObject newTrapGameObject = GameObject.Instantiate(MarbleTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
