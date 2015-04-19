@@ -13,4 +13,14 @@ public class DoorTrap : Trap
 		Debug.Log(name + "OnEnterTrap");
 		base.OnEnterTrap(person);
 	}
+
+	void OnTriggerEnter(Collider col)
+	{
+		base.OnTriggerEnter(col);
+	}
+	
+	void OnTriggerExit(Collider col)
+	{
+		base.OnTriggerExit(col);
+	}
 }

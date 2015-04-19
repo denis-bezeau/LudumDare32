@@ -12,7 +12,7 @@ public class PlantTrap : Trap
 	public void Awake()
 	{
 		tendrilTrigger = GetComponent<TendrilTriggerOffset>();
-		OnEnterTrap(null);
+		//OnEnterTrap(null);
 	}
 
 	public override void OnEnterTrap(PersonAI person)
@@ -25,20 +25,33 @@ public class PlantTrap : Trap
 			tendrilTrigger.isAttack = true;
 		}
 
-		if (_parentRoom)
-		{
-			List<PersonAI> people = _parentRoom.GetPeople();
-			for (int i = 0; i < people.Count; ++i)
-			{
-				
+		PersonStats stats = person.GetPlayerStats();
+		stats.HP -= Damage;
+		person.SetPlayerStats(stats);
 
-				PersonStats stats = people[i].GetPlayerStats();
-				stats.HP -= Damage;
-				people[i].SetPlayerStats(stats);
+		// Damage is walk over trap
+//		if (_parentRoom)
+//		{
+//			List<PersonAI> people = _parentRoom.GetPeople();
+//			for (int i = 0; i < people.Count; ++i)
+//			{
+//				PersonStats stats = people[i].GetPlayerStats();
+//				stats.HP -= Damage;
+//				people[i].SetPlayerStats(stats);
+//
+//				Debug.Log("people[" + i + "] doing damage, current hp = " + stats.HP);
+//			}
+//		}
 
-				Debug.Log("people[" + i + "] doing damage, current hp = " + stats.HP);
-			}
-		}
+	}
 
+	void OnTriggerEnter(Collider col)
+	{
+		base.OnTriggerEnter(col);
+	}
+	
+	void OnTriggerExit(Collider col)
+	{
+		base.OnTriggerEnter(col);
 	}
 }

@@ -105,10 +105,11 @@ public class Room : MonoBehaviour
 			Debug.Log ("Person entered room");
 			_people.Add (person);
 
-			for (int i = 0; i < _traps.Count; ++i)
-			{
-				_traps[i].OnEnterTrap(person);
-			}
+			// Traps now trigger on people walking over them.
+//			for (int i = 0; i < _traps.Count; ++i)
+//			{
+//				//_traps[i].OnEnterTrap(person);
+//			}
 		}
 	}
 
@@ -119,11 +120,11 @@ public class Room : MonoBehaviour
 		{
 			Debug.Log ("Person left room");
 			_people.Remove (person);
-
-			for (int i = 0; i < _traps.Count; ++i)
-			{
-				_traps[i].OnExitTrap(person);
-			}
+			// Traps now trigger on people walking over them.
+//			for (int i = 0; i < _traps.Count; ++i)
+//			{
+//				_traps[i].OnExitTrap(person);
+//			}
 		}
 	}
 

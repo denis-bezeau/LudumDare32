@@ -9,8 +9,6 @@ public class MarbleTrap : Trap
 	public void Awake()
 	{
 		hauntedMarbles = GetComponent<HauntedMarbles>();
-		OnEnterTrap(null);
-
 	}
 	public override void OnEnterTrap(PersonAI person)
 	{
@@ -26,5 +24,14 @@ public class MarbleTrap : Trap
 	{
 		person.GetComponent<PersonMotion>().m_speedModifier = 1.0f;
 	}
+
+	void OnTriggerEnter(Collider col)
+	{
+		base.OnTriggerEnter(col);
+	}
 	
+	void OnTriggerExit(Collider col)
+	{
+		base.OnTriggerEnter(col);
+	}
 }

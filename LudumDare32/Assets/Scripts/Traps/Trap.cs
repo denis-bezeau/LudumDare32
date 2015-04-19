@@ -22,6 +22,8 @@ public class Trap : MonoBehaviour
 		get { return _cost; } 
 	}
 
+	private BoxCollider _trapCol;
+
 	/// <summary>
 	/// Damage trap can take before being destroyed
 	/// </summary>
@@ -46,5 +48,28 @@ public class Trap : MonoBehaviour
 	public virtual void OnExitTrap(PersonAI person)
 	{
 		
+	}
+
+	void Awake()
+	{
+		_trapCol = this.gameObject.GetComponent<BoxCollider>();
+	}
+
+	public void OnTriggerEnter(Collider col)
+	{
+		PersonAI person = col.gameObject.GetComponent<PersonAI>();
+		if(person != null)
+		{
+			OnEnterTrap(person);
+		}
+	}
+
+	public void OnTriggerExit(Collider col)
+	{
+		PersonAI person = col.gameObject.GetComponent<PersonAI>();
+		if(person != null)
+		{
+			OnExitTrap(person);
+		}
 	}
 }

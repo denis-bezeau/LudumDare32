@@ -23,6 +23,16 @@ public class TouchTrap : Trap
 		// nothing in base for now
 		// Generally apply to anyone who is in contact with trap
 	}
+
+	void OnTriggerEnter(Collider col)
+	{
+		base.OnTriggerEnter(col);
+	}
+	
+	void OnTriggerExit(Collider col)
+	{
+		base.OnTriggerEnter(col);
+	}
 }
 
 
