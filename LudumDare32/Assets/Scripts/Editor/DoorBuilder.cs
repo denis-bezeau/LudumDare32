@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 
 using System.Collections;
+using System.Collections.Generic;
 
 public class DoorBuilder : EditorWindow
 {
@@ -206,8 +207,8 @@ public class DoorBuilder : EditorWindow
 
 	private void IdentifyErrorDoors ()
 	{
-		Door[] badDoors = FindErrorDoors ();
-		string errorString = "Number of bad doors found: " + badDoors.Length;
+		List<Door> badDoors = FindErrorDoors ();
+		string errorString = "Number of bad doors found: " + badDoors.Count;
 		foreach (Door d in badDoors)
 		{
 			errorString += "\n " + d.name;
@@ -219,17 +220,16 @@ public class DoorBuilder : EditorWindow
 	/// Find doors with bad information.
 	/// </summary>
 	/// <returns>The error doors.</returns>
-	private Door[] FindErrorDoors ()
+	private List<Door> FindErrorDoors ()
 	{
 		Door[] allDoors = GameObject.FindObjectsOfType<Door> ();
-		Door[] badDoors = new Door[allDoors.Length];
-		int idx = 0;
+		List<Door> badDoors = new List<Door> ();
+
 		foreach (Door d in allDoors)
 		{
 			if (!d.IsDoorInfoGood ())
 			{
-				badDoors [idx] = d;
-				idx++;
+				badDoors.Add (d);
 			}
 		}
 
@@ -238,7 +238,7 @@ public class DoorBuilder : EditorWindow
 
 	private void RemoveErrorDoors ()
 	{
-		Door[] badDoors = FindErrorDoors ();
+		List<Door> badDoors = FindErrorDoors ();
 		foreach (Door d in badDoors)
 		{
 			Undo.DestroyObjectImmediate (d.gameObject);
