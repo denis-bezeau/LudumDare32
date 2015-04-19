@@ -8,11 +8,22 @@ public class PlantTrap : Trap
 {
 	public int Damage;
 	private TendrilTriggerOffset tendrilTrigger = null;
+	private float timeTicker;
+	public float TrapDuration = 3.0f;
 
-	public void Awake()
+	void Awake()
 	{
 		tendrilTrigger = GetComponent<TendrilTriggerOffset>();
-		//OnEnterTrap(null);
+		timeTicker = 0.0f;
+	}
+
+	void Update()
+	{
+		if(timeTicker >= TrapDuration)
+		{
+			GameObject.Destroy(this.gameObject);
+		}
+		timeTicker += Time.deltaTime;
 	}
 
 	public override void OnEnterTrap(PersonAI person)

@@ -147,102 +147,163 @@ public class GridBuilder : EditorWindow
 				// First, Build the NW Tile
 				if ((i == 0 && j == 0))
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1f, 0.25f, 0.5f);
 					col1.center = new Vector3 (0.0f, 0.375f, 0.0f);
 					
-					BoxCollider col2 = tile.AddComponent<BoxCollider> ();
+					BoxCollider col2 = wall1.AddComponent<BoxCollider> ();
 					col2.size = new Vector3 (0.25f, 1.0f, 0.5f);
 					col2.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerNW]);
-					tile.layer = LayerMask.NameToLayer ("Walls");
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
+
+					wall1.name = "Walls";
 					gameTile.IsWallTile = true;
 				}
 				// Then, Build the NE Tile
 				else if (i == 0 && j == _roomHeightTiles - 1)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
 					col1.center = new Vector3 (0.0f, 0.375f, 0.0f);
 					
-					BoxCollider col2 = tile.AddComponent<BoxCollider> ();
+					BoxCollider col2 = wall1.AddComponent<BoxCollider> ();
 					col2.size = new Vector3 (0.25f, 1.0f, 0.5f);
 					col2.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerNE]);
-					tile.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
+
+					wall1.name = "Walls";
 					gameTile.IsWallTile = true;
 				}
 				// Then, build the SW Tile
 				else if (i == _roomWidthTiles - 1 && j == 0)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
 					col1.center = new Vector3 (0.0f, -0.375f, 0.0f);
 					
-					BoxCollider col2 = tile.AddComponent<BoxCollider> ();
+					BoxCollider col2 = wall1.AddComponent<BoxCollider> ();
 					col2.size = new Vector3 (0.25f, 1.0f, 0.5f);
 					col2.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerSW]);
-					tile.layer = LayerMask.NameToLayer ("Walls");
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
+
+					wall1.name = "Walls";
 					gameTile.IsWallTile = true;
 				}
 				// Then, build the SE Tile
 				else if (i == _roomWidthTiles - 1 && j == _roomHeightTiles - 1)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
 					col1.center = new Vector3 (0.0f, -0.375f, 0.0f);
 					
-					BoxCollider col2 = tile.AddComponent<BoxCollider> ();
+					BoxCollider col2 = wall1.AddComponent<BoxCollider> ();
 					col2.size = new Vector3 (0.25f, 1.0f, 0.5f);
 					col2.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerSE]);
-					tile.layer = LayerMask.NameToLayer ("Walls");
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
+
+					wall1.name = "Walls";
 					gameTile.IsWallTile = true;
 				}
 				// Then, left wall colliders
 				else if (j == 0)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (0.25f, 1.0f, 0.5f);
 					col1.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallLeft]);
+
+					wall1.name = "Walls";
 					gameTile.IsWallTile = true;
+
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
 				}
 				// Then, bottom wall colliders
 				else if (i == _roomWidthTiles - 1)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
 					col1.center = new Vector3 (0.0f, -0.375f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallBottom]);
 					gameTile.IsWallTile = true;
+
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.name = "Walls";
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
 				}
 				// Then, top wall colliders
 				else if (i == 0)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
 					col1.center = new Vector3 (0.0f, 0.375f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallTop]);
 					gameTile.IsWallTile = true;
+
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.name = "Walls";
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
 				}
 				// finally, right wall colliders
 				else if (j == _roomHeightTiles - 1)
 				{
-					BoxCollider col1 = tile.AddComponent<BoxCollider> ();
+					GameObject wall1 = new GameObject();
+
+					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (0.25f, 1.0f, 0.5f);
 					col1.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallRight]);
 					gameTile.IsWallTile = true;
+
+					wall1.layer = LayerMask.NameToLayer ("Walls");
+
+					wall1.name = "Walls";
+					wall1.transform.parent = gameTile.transform;
+					wall1.transform.localPosition = Vector3.zero;
 				}
 				else
 				{
