@@ -12,6 +12,14 @@ public class Room : MonoBehaviour
 	protected List<Door>
 		_doors;
 
+	[SerializeField]
+	protected List<GameTile> _tiles;
+	public List<GameTile> GameTiles
+	{
+		get { return _tiles; }
+		set { _tiles = value; }
+	}
+
 	protected List<Trap> _traps = new List<Trap> ();
 
 	protected List<PersonAI> _people = new List<PersonAI> ();

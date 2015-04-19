@@ -5,6 +5,12 @@ public class GameTile : MonoBehaviour
 {
 	private MeshCollider _col;
 	private Renderer _renderer;
+	private bool _isWallTile;
+	public bool IsWallTile
+	{
+		get { return _isWallTile; }
+		set { _isWallTile = value; }
+	}
 		
 	void Awake()
 	{

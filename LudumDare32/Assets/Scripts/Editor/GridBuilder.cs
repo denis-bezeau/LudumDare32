@@ -2,6 +2,7 @@
 using UnityEditor;
 
 using System.Collections;
+using System.Collections.Generic;
 
 public class GridBuilder : EditorWindow
 {
@@ -83,7 +84,7 @@ public class GridBuilder : EditorWindow
 	private void BuildRoom ()
 	{
 		string rootTexPath = kTileSetPath + _tileSet.ToString () + "/" + kTileSetMatPath + "/";
-		Debug.Log (rootTexPath);
+
 		_tilePrefab = Resources.Load ("Prefabs/GameTile") as GameObject;
 		
 		GameObject roomObj = GameObject.Find (_roomName);
@@ -106,6 +107,8 @@ public class GridBuilder : EditorWindow
 		{
 			roomObj.gameObject.AddComponent<SpawnRoom> ();
 		}
+
+		roomObj.GetComponent<Room>().GameTiles = new List<GameTile>();
 		
 		roomObj.gameObject.layer = LayerMask.NameToLayer ("Ignore Raycast");
 		
@@ -153,6 +156,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerNW]);
+					gameTile.IsWallTile = true;
 				}
 				// Then, Build the NE Tile
 				else if (i == 0 && j == _roomHeightTiles - 1)
@@ -166,6 +170,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerNE]);
+					gameTile.IsWallTile = true;
 				}
 				// Then, build the SW Tile
 				else if (i == _roomWidthTiles - 1 && j == 0)
@@ -179,6 +184,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerSW]);
+					gameTile.IsWallTile = true;
 				}
 				// Then, build the SE Tile
 				else if (i == _roomWidthTiles - 1 && j == _roomHeightTiles - 1)
@@ -192,6 +198,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerSE]);
+					gameTile.IsWallTile = true;
 				}
 				// Then, left wall colliders
 				else if (j == 0)
@@ -201,6 +208,7 @@ public class GridBuilder : EditorWindow
 					col1.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallLeft]);
+					gameTile.IsWallTile = true;
 				}
 				// Then, bottom wall colliders
 				else if (i == _roomWidthTiles - 1)
@@ -210,6 +218,7 @@ public class GridBuilder : EditorWindow
 					col1.center = new Vector3 (0.0f, -0.375f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallBottom]);
+					gameTile.IsWallTile = true;
 				}
 				// Then, top wall colliders
 				else if (i == 0)
@@ -219,6 +228,7 @@ public class GridBuilder : EditorWindow
 					col1.center = new Vector3 (0.0f, 0.375f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallTop]);
+					gameTile.IsWallTile = true;
 				}
 				// finally, right wall colliders
 				else if (j == _roomHeightTiles - 1)
@@ -228,11 +238,14 @@ public class GridBuilder : EditorWindow
 					col1.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallRight]);
+					gameTile.IsWallTile = true;
 				}
 				else
 				{
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.Floor]);
+					gameTile.IsWallTile = false;
 				}
+				roomObj.GetComponent<Room>().GameTiles.Add (gameTile);
 				tileCount++;
 			}
 		}
