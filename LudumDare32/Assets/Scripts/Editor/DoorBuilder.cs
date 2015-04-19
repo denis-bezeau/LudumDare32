@@ -15,11 +15,6 @@ public class DoorBuilder : EditorWindow
 
 	private static readonly Vector3 DEFAULT_DOOR_POS = new Vector3 (0f, 0f, -0.01f);
 
-	private static readonly int kTileWidth = 1;
-	private static readonly int kTileHeight = 1;
-	
-	private static readonly float kZDepth = 1f;
-
 	private GameObject _doorPrefab;
 	private bool _showNameHelp = false;
 	private bool _showRoomHelp = false;

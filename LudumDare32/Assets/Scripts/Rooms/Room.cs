@@ -24,8 +24,8 @@ public class Room : MonoBehaviour
 
 	public void Awake ()
 	{
+		// Error checking first!
 		_roomCollider = GetComponent<BoxCollider> ();
-
 		if (_roomCollider == null)
 		{
 			Debug.LogError ("Room doesn't have a collider!");
@@ -34,6 +34,26 @@ public class Room : MonoBehaviour
 		if (_doors.Count < 1)
 		{
 			Debug.LogWarning (this.name + " doesn't have any doors!");
+		}
+		else
+		{
+			List<Door> badDoors = new List<Door> ();
+			foreach (Door d in _doors)
+			{
+				if (d == null)
+				{
+					Debug.LogWarning ("Missing Door! Clean up doors in " + this.name);
+
+					// Can't modify the list while interating
+					badDoors.Add (d);
+				}
+			}
+
+			// Get rid of them
+			foreach (Door bd in badDoors)
+			{
+				_doors.Remove (bd);
+			}
 		}
 	}
 
@@ -68,7 +88,7 @@ public class Room : MonoBehaviour
 			return false;
 
 		// We don't want more than one room trap
-		if (trapType is RoomTrap)
+		if (trapType == typeof(RoomTrap))
 		{
 			foreach (Trap t in _traps)
 			{
