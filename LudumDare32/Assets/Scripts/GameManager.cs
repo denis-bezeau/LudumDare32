@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
 		PlayerPrefs.SetFloat("musicVolume", 0.02f);
 		PlayerPrefs.SetFloat("speechVolume", 0.85f);
 
-		SoundManager.GetInstance();
+		//CTEventManager.FireEvent(new PlaySFXEvent() {assetName =""});
 		
 	}
 
@@ -111,6 +111,9 @@ public class GameManager : MonoBehaviour
 		{
 			YouWin();
 		}
+
+		CTEventManager.FireEvent(new PlaySFXEvent() {assetName = "fbm_Death"}); //events for everyone
+
 	}
 
 	public void OnEscapeEvent(EscapeEvent eventData)
