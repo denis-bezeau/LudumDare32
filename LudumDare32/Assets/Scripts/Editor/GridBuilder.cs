@@ -156,6 +156,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerNW]);
+					tile.layer = LayerMask.NameToLayer ("Walls");
 					gameTile.IsWallTile = true;
 				}
 				// Then, Build the NE Tile
@@ -170,6 +171,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerNE]);
+					tile.layer = LayerMask.NameToLayer ("Walls");
 					gameTile.IsWallTile = true;
 				}
 				// Then, build the SW Tile
@@ -184,6 +186,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (-0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerSW]);
+					tile.layer = LayerMask.NameToLayer ("Walls");
 					gameTile.IsWallTile = true;
 				}
 				// Then, build the SE Tile
@@ -198,6 +201,7 @@ public class GridBuilder : EditorWindow
 					col2.center = new Vector3 (0.375f, 0.0f, 0.0f);
 					
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.WallCornerSE]);
+					tile.layer = LayerMask.NameToLayer ("Walls");
 					gameTile.IsWallTile = true;
 				}
 				// Then, left wall colliders

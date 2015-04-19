@@ -43,6 +43,9 @@ public class GameManager : MonoBehaviour
 	private float _nextAttackWaveTime = 0.0f;
 	private int _attackWaveNumber = 0;
 
+	[SerializeField]
+	private CameraManager _cameraManager;
+
 	public static GameManager GetInstance()
 	{
 		if (instance == null)
@@ -155,6 +158,8 @@ public class GameManager : MonoBehaviour
 		{
 			yield return null;
 		}
+
+		GameObject.Instantiate(_cameraManager, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
 
 		if (musicStarted == false)
 		{

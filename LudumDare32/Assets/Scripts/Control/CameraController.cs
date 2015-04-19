@@ -12,6 +12,8 @@ public class CameraController : MonoBehaviour
 	private Vector3 cameraStartPos;
 	private Vector3 cameraWorldPos;
 
+	public Vector3 LevelCenter;
+
 	void Start()
 	{
 		cameraStartPos = this.transform.position;
@@ -35,24 +37,26 @@ public class CameraController : MonoBehaviour
 			float totalDeltaX = dX + transform.position.x;
 			float totalDeltaY = dY + transform.position.y;
 
-			if (Mathf.Abs (totalDeltaX - cameraStartPos.x) < maxDeltaX)
+			Debug.Log (totalDeltaX);
+
+			if (Mathf.Abs (totalDeltaX) < maxDeltaX + Mathf.Abs (LevelCenter.x))
 			{
 				transform.Translate(dX, 0, 0);
 				lastPosition.x = cameraWorldPos.x;
 			}
 			else
 			{
-				lastPosition.x = maxDeltaX * Mathf.Sign (totalDeltaX - cameraStartPos.x);
+				lastPosition.x = maxDeltaX + Mathf.Sign (totalDeltaX - LevelCenter.x);
 			}
 
-			if (Mathf.Abs(totalDeltaY - cameraStartPos.y) < maxDeltaY)
+			if (Mathf.Abs(totalDeltaY - LevelCenter.y) < maxDeltaY)
 			{
 				transform.Translate(0, dY, 0);
 				lastPosition.y = cameraWorldPos.y;
 			}
 			else
 			{
-				lastPosition.y = maxDeltaY * Mathf.Sign (totalDeltaY - cameraStartPos.y);
+				lastPosition.y = maxDeltaY  + Mathf.Sign (totalDeltaY - LevelCenter.y);
 			}
 		}
 	}
