@@ -12,6 +12,8 @@ public class Trap : MonoBehaviour
 		COUNT
 	}
 
+	public Room _parentRoom;
+
 	protected const string _title = "default";
 	public virtual string Title { get { return _title; } }
 

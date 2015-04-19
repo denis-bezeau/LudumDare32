@@ -6,8 +6,6 @@ using System.Collections.Generic;
 /// </summary>
 public class PlantTrap : Trap
 {
-	public Room _parentRoom;
-	
 	public int Damage;
 
 	private TendrilTriggerOffset tendrilTrigger = null;

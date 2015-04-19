@@ -327,6 +327,7 @@ public class GameManager : MonoBehaviour
 					if (tile.parentRoom != null)
 					{
 						tile.parentRoom.AddTrapToRoom(newTrap);
+						newTrap._parentRoom = tile.parentRoom;
 					}
 					
 					break;
@@ -345,6 +346,7 @@ public class GameManager : MonoBehaviour
 					if (tile.parentRoom != null)
 					{
 						tile.parentRoom.AddTrapToRoom(newTrap);
+						newTrap._parentRoom = tile.parentRoom;
 					}
 					break;
 				}
@@ -363,6 +365,7 @@ public class GameManager : MonoBehaviour
 					if (tile.parentRoom != null)
 					{
 						tile.parentRoom.AddTrapToRoom(newTrap);
+						newTrap._parentRoom = tile.parentRoom;
 					}
 					
 					break;
