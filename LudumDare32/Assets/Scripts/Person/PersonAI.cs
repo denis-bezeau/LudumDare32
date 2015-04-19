@@ -64,6 +64,9 @@ public class PersonAI : MonoBehaviour
 	private Room					m_currentRoom = null;								//!< Current room
 	private float					m_nextDoorBashTime = 0.0f;							//!< Time to bash the door next
 	private PersonStats				m_PersonStats = null;								//!< stats of the person e.g. health
+
+	[SerializeField]
+	private Animator m_animator;
 	
 	/**************************** PUBLIC METHODS ****************************/
 
@@ -185,6 +188,11 @@ public class PersonAI : MonoBehaviour
 			
 			case EAIState.k_dead:
 			{
+				if(m_animator != null)
+				{
+					m_animator.SetBool ("death", true);
+				}
+				this.GetComponent<SphereCollider>().enabled = false;
 			}
 			break;
 		}
@@ -216,6 +224,8 @@ public class PersonAI : MonoBehaviour
 			
 			case EAIState.k_dead:
 			{
+				
+				m_personMotion.Die ();
 			}
 			break;
 		}

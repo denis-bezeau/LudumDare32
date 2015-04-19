@@ -77,6 +77,14 @@ public class PersonMotion : MonoBehaviour
 		return false;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	We have died!
+	//////////////////////////////////////////////////////////////////////////
+	public void Die()
+	{
+		StateChange(EMotionState.k_dead);
+	}
+
 	/*************************** PRIVATE METHODS ****************************/
 
 	//////////////////////////////////////////////////////////////////////////
@@ -191,6 +199,8 @@ public class PersonMotion : MonoBehaviour
 			m_rigidBody.AddForce(delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);//Impulse);
 		}
 	}
+
+
 }
 
 
