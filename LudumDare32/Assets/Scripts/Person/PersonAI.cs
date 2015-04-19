@@ -109,6 +109,7 @@ public class PersonAI : MonoBehaviour
 		{
 			case EAIState.k_chooseADoor:
 			{
+				LookForADoor();
 			}
 			break;
 			
@@ -130,7 +131,7 @@ public class PersonAI : MonoBehaviour
 					}
 					else
 					{
-					   StateChange(EAIState.k_bashDownDoor);
+						StateChange(EAIState.k_bashDownDoor);
 					}
 				}
 			}
@@ -176,37 +177,6 @@ public class PersonAI : MonoBehaviour
 		{
 			case EAIState.k_chooseADoor:
 			{
-				if((m_currentRoom != null) && (m_currentRoom.Doors != null) && (m_currentRoom.Doors.Count > 0))
-				{
-					// Choose which door to walk to
-					if(m_personality == EPersonality.k_explorer)
-					{
-						// Explorers pick a random door
-						int doorIndex = (int)(UnityEngine.Random.value*m_currentRoom.Doors.Count);
-						if(doorIndex >= m_currentRoom.Doors.Count)
-							doorIndex = m_currentRoom.Doors.Count-1;
-						m_targetDoor = m_currentRoom.Doors[doorIndex];
-
-						// If this is the door we came through then try another one
-						if((m_targetDoor == m_previousDoor) && (m_currentRoom.Doors.Count > 1))
-						{
-							doorIndex++;
-							if(doorIndex >= m_currentRoom.Doors.Count)
-								doorIndex = 0;
-							m_targetDoor = m_currentRoom.Doors[doorIndex];
-						}
-					}
-					else
-					{
-						// Pick the first door (the one that gets us towards the exit fastest)
-						m_targetDoor = m_currentRoom.Doors[0];
-					}
-					
-					if(m_targetDoor != null)
-					{
-						StateChange(EAIState.k_walkToDoor);
-					}
-				}
 			}
 			break;
 			
@@ -229,6 +199,48 @@ public class PersonAI : MonoBehaviour
 		}
 		
 		m_aiState = newState;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Look around for a door to walk to.
+	//////////////////////////////////////////////////////////////////////////
+	private void LookForADoor()
+	{
+		if((m_currentRoom != null) && (m_currentRoom.Doors != null) && (m_currentRoom.Doors.Count > 0))
+		{
+			int doorIndex = 0;
+			
+			// Choose which door to walk to
+			if(m_personality == EPersonality.k_explorer)
+			{
+				// Explorers pick a random door
+				doorIndex = (int)(UnityEngine.Random.value*m_currentRoom.Doors.Count);
+				if(doorIndex >= m_currentRoom.Doors.Count)
+					doorIndex = m_currentRoom.Doors.Count-1;
+				m_targetDoor = m_currentRoom.Doors[doorIndex];
+			}
+			else
+			{
+				// Pick the first door (the one that gets us towards the exit fastest)
+				doorIndex = 0;
+			}
+			
+			m_targetDoor = m_currentRoom.Doors[doorIndex];
+			
+			// If this is the door we came through then try another one
+			if((m_targetDoor == m_previousDoor) && (m_currentRoom.Doors.Count > 1))
+			{
+				doorIndex++;
+				if(doorIndex >= m_currentRoom.Doors.Count)
+					doorIndex = 0;
+				m_targetDoor = m_currentRoom.Doors[doorIndex];
+			}
+			
+			if(m_targetDoor != null)
+			{
+				StateChange(EAIState.k_walkToDoor);
+			}
+		}
 	}
 }
 

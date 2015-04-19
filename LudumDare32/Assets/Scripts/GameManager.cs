@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour 
 {
 	//exposed variables for the user to change
-	public int MaximumEscapeeCount;
+	public int MaximumEscapeeCount = 10;
 	public int TotalEnemies;
 	public GameObject EnemyPrefab;
 	public GameObject[] EnemySpawnLocations;
@@ -65,10 +65,7 @@ public class GameManager : MonoBehaviour
 			Enemies[i] = null;
 		}
 		Enemies.Clear();
-		for (int i = 0; i < TotalEnemies; ++i)
-		{
-			SpawnEnemy();
-		}
+
 		StartCoroutine(ReLoadLevel());
 
 		currentEscapeeCount = 0;
@@ -79,7 +76,7 @@ public class GameManager : MonoBehaviour
 		GameObject.Destroy(DefaultLevel);
 		DefaultLevel = null;
 
-		AsyncOperation levelLoadOperation = Application.LoadLevelAdditiveAsync("DefaultLevel");
+		AsyncOperation levelLoadOperation = Application.LoadLevelAdditiveAsync("DefaultLevel");//"RoomTest");
 
 		while (levelLoadOperation.isDone == false)
 		{
@@ -96,6 +93,12 @@ public class GameManager : MonoBehaviour
 				_entranceDoor = door;
 			if(door.isExit)
 				_exitDoor = door;
+		}
+
+		// Spawn enemies (after finding entrance door above)
+		for (int i = 0; i < TotalEnemies; ++i)
+		{
+			SpawnEnemy();
 		}
 	}
 
