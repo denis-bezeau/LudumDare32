@@ -10,7 +10,7 @@ public class Room : MonoBehaviour
 	/// </summary>
 	[SerializeField]
 	protected List<Door>
-		_doors = new List<Door> ();
+		_doors;
 
 	protected List<Trap> _traps = new List<Trap> ();
 
@@ -19,7 +19,7 @@ public class Room : MonoBehaviour
 		get { return _people;}
 	}
 
-	public List<Door> Doors { get{ return _doors; } }
+	public List<Door> Doors { get { return _doors; } }
 	private BoxCollider _roomCollider = null;
 
 	public void Awake ()
@@ -85,7 +85,7 @@ public class Room : MonoBehaviour
 	/// <summary>
 	/// What to do when a new person enters the room
 	/// </summary>
-	public virtual void OnEnterRoom(PersonAI person)
+	public virtual void OnEnterRoom (PersonAI person)
 	{
 
 	}
@@ -93,7 +93,7 @@ public class Room : MonoBehaviour
 	/// <summary>
 	/// What to do when a person exits a room
 	/// </summary>
-	public virtual void OnExitRoom(PersonAI person)
+	public virtual void OnExitRoom (PersonAI person)
 	{
 
 	}
@@ -101,6 +101,24 @@ public class Room : MonoBehaviour
 	private void AddTrapToRoom (Trap newTrap)
 	{
 		_traps.Add (newTrap);
+	}
+
+	/// <summary>
+	/// Adds the door to room.
+	/// </summary>
+	/// <returns><c>true</c>, if door to room was added, <c>false</c> otherwise.</returns>
+	/// <param name="newDoor">New door.</param>
+	/// <remarks>SHOULD ONLY BE USED BY EDITOR TOOLS</remarks>
+	public bool AddDoorToRoom (Door newDoor)
+	{
+		if (_doors.Contains (newDoor))
+		{
+			Debug.LogWarning ("Trying to add existing door " + newDoor.name + " to room " + this.name);
+			return false;
+		}
+
+		_doors.Add (newDoor);
+		return true;
 	}
 
 	public List<Room> GetConnectedRooms ()
@@ -163,7 +181,7 @@ public class Room : MonoBehaviour
 		return false;
 	}
 
-	public List<PersonAI> GetPeople()
+	public List<PersonAI> GetPeople ()
 	{
 		return _people;
 	}

@@ -25,32 +25,35 @@ public class Door : MonoBehaviour
 	// Closed door has health which enemies can deplete to open the door
 	private int _health = 10;
 
-	public void Hit()
+	public void Hit ()
 	{
 		_health--;
 
-		if(_health <= 0)
+		if (_health <= 0)
 			_isOpen = true;
 	}
 
 	public void Awake ()
 	{
-		if (_room1 == null || _room2 == null) {
+		if (_room1 == null || _room2 == null)
+		{
 			Debug.LogError (this.name + ": Doors need to be attached to two rooms!");
 		}
 	}
 
 	public Room GetOtherRoom (Room thisRoom)
 	{
-		if((thisRoom == null) && isEntrance)
+		if ((thisRoom == null) && isEntrance)
 		{
 			return _room1;
-		}
-		else if (thisRoom == _room1) {
+		} else if (thisRoom == _room1)
+		{
 			return _room2;
-		} else if (thisRoom == _room2) {
+		} else if (thisRoom == _room2)
+		{
 			return _room1;
-		} else {
+		} else
+		{
 			Debug.LogError ("Door isn't in requested room!");
 		}
 		return null;
@@ -59,6 +62,12 @@ public class Door : MonoBehaviour
 	public void ToggleDoorOpen ()
 	{
 		_isOpen = !_isOpen;
+	}
+
+	public void SetConnectedRooms (Room room1, Room room2)
+	{
+		_room1 = room1;
+		_room2 = room2;
 	}
 }
 
