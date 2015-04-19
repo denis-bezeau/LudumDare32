@@ -33,7 +33,7 @@ public class Trap : MonoBehaviour
 	/// <summary>
 	/// What to do when a new person enters the room
 	/// </summary>
-	public virtual void OnEnterTrap ()
+	public virtual void OnEnterTrap (PersonAI person)
 	{
 		
 	}
@@ -41,7 +41,7 @@ public class Trap : MonoBehaviour
 	/// <summary>
 	/// What to do when a person exits a room
 	/// </summary>
-	public virtual void OnExitTrap()
+	public virtual void OnExitTrap(PersonAI person)
 	{
 		
 	}

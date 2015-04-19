@@ -3,5 +3,20 @@ using System.Collections;
 
 public class PersonStats : MonoBehaviour
 {
-	public int HP = 100;
+	private int hp = 30;
+
+	public int HP
+	{
+		get { return hp; }
+		set 
+		{
+			hp = value;
+
+			if (hp <= 0)
+			{
+				CTEventManager.FireEvent(new KillEnemyEvent());
+			}
+		}
+	
+	}
 }

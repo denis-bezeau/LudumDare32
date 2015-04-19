@@ -44,7 +44,7 @@ public class GameTile : MonoBehaviour
 			{
 				if (GameManager.GetInstance().IsPlacingTrap())
 				{
-					if (GameManager.GetInstance().IsTileValid(this))
+					if ((GameManager.GetInstance().IsTileValid(this))&& (parentRoom.CanHaveTraps))
 					{
 						_renderer.material.color = Color.green;
 					}
@@ -59,7 +59,7 @@ public class GameTile : MonoBehaviour
 
 	void OnMouseUp()
 	{
-		if (GameManager.GetInstance().IsTileValid(this))
+		if ((GameManager.GetInstance().IsTileValid(this)) && (parentRoom.CanHaveTraps))
 		{
 			CTEventManager.FireEvent(new PlaceTrapEvent() { gameTile = this });
 		}

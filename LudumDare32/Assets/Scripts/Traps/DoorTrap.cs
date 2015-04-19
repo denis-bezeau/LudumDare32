@@ -8,7 +8,7 @@ public class DoorTrap : Trap
 {
 	public Room _parentRoom;
 
-	public override void OnEnterTrap()
+	public override void OnEnterTrap(PersonAI person)
 	{
 		Debug.Log(name + "OnEnterTrap");
 	}

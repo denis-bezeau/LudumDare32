@@ -42,6 +42,7 @@ public class PersonMotion : MonoBehaviour
 	/***************************** PUBLIC DATA ******************************/
 					
 	public float					m_walkSpeed = 20.0f;								//!< Speed to walk
+	public float					m_speedModifier = 1.0f;									//!< multiply this by m_walkSpeed
 
 	/***************************** PRIVATE DATA *****************************/
 
@@ -52,6 +53,7 @@ public class PersonMotion : MonoBehaviour
 	private EMotionState			m_motionState = EMotionState.k_waitForTarget;		//!< Motion FSM
 	private	Vector3					m_targetPoint;										//!< Point to walk towards (probably a door)
 	private float					m_waitTime;											//!< Time to wait until
+
 
 	/**************************** PUBLIC METHODS ****************************/
 
@@ -183,7 +185,7 @@ public class PersonMotion : MonoBehaviour
 		else
 		{
 			// No - keep moving towards our target
-			m_rigidBody.AddForce(delta.normalized * m_walkSpeed, ForceMode.Force);//Impulse);
+			m_rigidBody.AddForce(delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);//Impulse);
 		}
 	}
 }

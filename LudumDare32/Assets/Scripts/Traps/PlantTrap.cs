@@ -7,49 +7,34 @@ using System.Collections.Generic;
 public class PlantTrap : Trap
 {
 	public Room _parentRoom;
-
+	
 	public int Damage;
 
-	private GameObject paintCanArtGameObject;
-	private Animator paintCanTrapAnimator;
-	bool markForDelete = false;
+	private TendrilTriggerOffset tendrilTrigger = null;
 
+	public void Awake()
+	{
+		tendrilTrigger = GetComponent<TendrilTriggerOffset>();
+	}
 
-	public override void OnEnterTrap()
+	public override void OnEnterTrap(PersonAI person)
 	{
 		Debug.Log(name + "OnEnterTrap");
-		base.OnEnterTrap();
+		base.OnEnterTrap(person);
 
-		Animator[] animators = GetComponentsInChildren<Animator>() as Animator[];
-
-		for (int i = 0; i < animators.Length; ++i)
+		if (tendrilTrigger != null)
 		{
-			paintCanTrapAnimator.SetInteger("Execute", 1);
+			tendrilTrigger.isAttack = true;
 		}
-		
-		if (_parentRoom != null)
-		{
-			List<PersonAI> people = _parentRoom.GetPeople();
-			for (int i = 0; i < people.Count; ++i)
-			{
-				people[i].GetPlayerStats().HP -= Damage;
-				Debug.Log(people[i].name + ".HP=" + people[i].GetPlayerStats().HP);
-			}
-		}
-	}
-	
-	public void OnAnimationComplete(eAnimTypes animType)
-	{
-		Debug.Log(name + "OnAnimationComplete()" + animType);
-		markForDelete = true;
-	}
 
-	public void Update()
-	{
-		if(markForDelete == true)
+		List<PersonAI> people = _parentRoom.GetPeople();
+		for (int i = 0; i < people.Count; ++i)
 		{
-			Debug.Log("trying to destroy " + name);
-			GameObject.Destroy(paintCanArtGameObject);
+			Debug.Log("people[" + i + "] doing damage");
+
+			PersonStats stats = people[i].GetPlayerStats();
+			stats.HP -= Damage;
+			people[i].SetPlayerStats(stats);
 		}
 	}
 }
