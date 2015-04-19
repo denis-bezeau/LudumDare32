@@ -49,23 +49,23 @@ public class DoorBuilder : EditorWindow
 
 		_room1 = (Room)EditorGUILayout.ObjectField (_room1, typeof(Room), true);
 		_room2 = (Room)EditorGUILayout.ObjectField (_room2, typeof(Room), true);
-		
-		if (GUILayout.Button ("Build Door"))
+
+		if (GUILayout.Button ("Build Door", boldButton))
 		{
 			// Do all error checking for form data here
 			if (!NameIsUnique ())
 			{
 				_showNameHelp = true;
 			}
-			else if (_room1 == _room2)
-			{
-				_showRoomHelp = true;
-				_roomHelpString = "Connected rooms cannot be the same";
-			}
 			else if (_room1 == null || _room2 == null)
 			{
 				_showRoomHelp = true;
 				_roomHelpString = "Door must connect to two rooms";
+			}
+			else if (_room1 == _room2)
+			{
+				_showRoomHelp = true;
+				_roomHelpString = "Connected rooms cannot be the same";
 			}
 			else
 			{
@@ -80,6 +80,17 @@ public class DoorBuilder : EditorWindow
 		{
 			RemoveMissingDoors ();
 		}
+
+		EditorGUILayout.BeginHorizontal ();
+		if (GUILayout.Button ("Identify bad doors"))
+		{
+			IdentifyErrorDoors ();
+		}
+		if (GUILayout.Button ("Remove bad doors"))
+		{
+			RemoveErrorDoors ();
+		}
+		EditorGUILayout.EndHorizontal ();
 
 		GameObject gO = Selection.activeGameObject;
 		Door selectedDoor = null;
@@ -189,22 +200,61 @@ public class DoorBuilder : EditorWindow
 		}
 	}
 
+	private void IdentifyErrorDoors ()
+	{
+		Door[] badDoors = FindErrorDoors ();
+		string errorString = "Number of bad doors found: " + badDoors.Length;
+		foreach (Door d in badDoors)
+		{
+			errorString += "\n " + d.name;
+		}
+		Debug.LogWarning (errorString);
+	}
+
+	/// <summary>
+	/// Find doors with bad information.
+	/// </summary>
+	/// <returns>The error doors.</returns>
+	private Door[] FindErrorDoors ()
+	{
+		Door[] allDoors = GameObject.FindObjectsOfType<Door> ();
+		Door[] badDoors = new Door[allDoors.Length];
+		int idx = 0;
+		foreach (Door d in allDoors)
+		{
+			if (!d.IsDoorInfoGood ())
+			{
+				badDoors [idx] = d;
+				idx++;
+			}
+		}
+
+		return badDoors;
+	}
+
+	private void RemoveErrorDoors ()
+	{
+		Door[] badDoors = FindErrorDoors ();
+		foreach (Door d in badDoors)
+		{
+			Undo.DestroyObjectImmediate (d.gameObject);
+		}
+	}
+
 	private void RemoveHiddenWalls ()
 	{
-		Debug.Log ("TODO: Remove hidden walls...");
-
 		Door selectedDoor = Selection.activeGameObject.GetComponent<Door> ();
 		if (selectedDoor != null)
 		{
 			GameTile[] tiles = selectedDoor.GetComponentsInChildren<GameTile> ();
 			foreach (GameTile gT in tiles)
 			{
-				RemoveHiddenTiles (gT);
+				RemoveBehindTile (gT);
 			}
 		}
 	}
 
-	private void RemoveHiddenTiles (GameTile tile)
+	private void RemoveBehindTile (GameTile tile)
 	{
 		RaycastHit hit;
 		Ray detectBehind = new Ray (tile.transform.position, new Vector3 (0f, 0f, 1f));

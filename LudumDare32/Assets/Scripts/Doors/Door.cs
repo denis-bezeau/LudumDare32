@@ -85,6 +85,16 @@ public class Door : MonoBehaviour
 		_room1 = room1;
 		_room2 = room2;
 	}
+
+	public bool IsDoorInfoGood ()
+	{
+		if (_room1 == null || _room2 == null)
+		{
+			return false;
+		}
+
+		return true;
+	}
 }
 
 
