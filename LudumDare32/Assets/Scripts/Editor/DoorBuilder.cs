@@ -273,11 +273,11 @@ public class DoorBuilder : EditorWindow
 		foreach (Door d in allDoors)
 		{
 			MeshRenderer[] meshRenderers = d.GetComponentsInChildren<MeshRenderer>();
-			Debug.Log(d);
+			//Debug.Log(d);
 
 			foreach (MeshRenderer m in meshRenderers)
 			{
-				Debug.Log(m);
+				//Debug.Log(m);
 				m.enabled = !m.enabled;
 			}
 		}
