@@ -14,9 +14,9 @@ public class GameManager : MonoBehaviour
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
 	public Animator Hud;
-	public GameObject PlantTrapPrefab;
-	public GameObject MarbleTrapPrefab;
-	public GameObject DoorTrapPrefab;
+	private GameObject PlantTrapPrefab;
+	private GameObject MarbleTrapPrefab;
+	private GameObject DoorTrapPrefab;
 
 
 	private int currentEscapeeCount;
@@ -60,6 +60,9 @@ public class GameManager : MonoBehaviour
 
 	public void Awake()
 	{
+		instance = this;
+		SetUpTrapData();
+
 		CTEventManager.AddListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent>(OnRestartGame);
 		CTEventManager.AddListener<EscapeEvent>(OnEscapeEvent);
@@ -71,7 +74,7 @@ public class GameManager : MonoBehaviour
 		PlayerPrefs.SetFloat("speechVolume", 0.85f);
 
 		SoundManager.GetInstance();
-		SetUpTrapData();
+		
 	}
 
 	public void OnDestroy()
@@ -199,6 +202,7 @@ public class GameManager : MonoBehaviour
 		energy = 0;
 
 		trapCosts = new int [(int)Trap.TrapType.COUNT];
+		trapCosts[(int)Trap.TrapType.None] = 0;
 		trapCosts[(int)Trap.TrapType.Door] = 10;
 		trapCosts[(int)Trap.TrapType.Plant] = 30;
 		trapCosts[(int)Trap.TrapType.Marble] = 20;
@@ -206,7 +210,12 @@ public class GameManager : MonoBehaviour
 
 	public int GetTrapCost(Trap.TrapType type)
 	{
-		return trapCosts[(int)type];
+		if ((int)type < (int)Trap.TrapType.COUNT)
+		{
+			return trapCosts[(int)type];
+		}
+
+		return 0;
 	}
 
 	public void OnBuyTrapEvent(BuyTrapEvent eventData)
@@ -251,19 +260,54 @@ public class GameManager : MonoBehaviour
 			case Trap.TrapType.Door:
 				{
 					currentSelectedTrap = Trap.TrapType.None;
-					GameObject.Instantiate(DoorTrapPrefab, tile.transform.position, Quaternion.identity);
+					if (DoorTrapPrefab == null)
+					{
+						DoorTrapPrefab = Resources.Load("Prefabs/traps/DoorTrap/DoorTrap") as GameObject;
+					}
+					GameObject newTrapGameObject = GameObject.Instantiate(DoorTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
+					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
+					tile.currentTrap = newTrap;
+					if (tile.parentRoom != null)
+					{
+						tile.parentRoom.AddTrapToRoom(newTrap);
+					}
+					
 					break;
 				}
 			case Trap.TrapType.Plant:
 				{
 					currentSelectedTrap = Trap.TrapType.None;
-					GameObject.Instantiate(PlantTrapPrefab, tile.transform.position, Quaternion.identity);
+					if (PlantTrapPrefab == null)
+					{
+						PlantTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
+					}
+					GameObject newTrapGameObject = GameObject.Instantiate(PlantTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
+					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
+					tile.currentTrap = newTrap;
+					if (tile.parentRoom != null)
+					{
+						tile.parentRoom.AddTrapToRoom(newTrap);
+					}
 					break;
 				}
 			case Trap.TrapType.Marble:
 				{
 					currentSelectedTrap = Trap.TrapType.None;
-					GameObject.Instantiate(MarbleTrapPrefab, tile.transform.position, Quaternion.identity);
+					if (MarbleTrapPrefab == null)
+					{
+						MarbleTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
+					}
+					Debug.Log(MarbleTrapPrefab);
+					GameObject newTrapGameObject = GameObject.Instantiate(MarbleTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
+					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
+					tile.currentTrap = newTrap;
+					if (tile.parentRoom != null)
+					{
+						tile.parentRoom.AddTrapToRoom(newTrap);
+					}
 					
 					break;
 				}
@@ -296,6 +340,13 @@ public class GameManager : MonoBehaviour
 			{
 				return false;
 			}
+		}
+
+		Debug.Log("tile.currentTrap=" + tile.currentTrap);
+		if (tile.currentTrap != null)
+		{
+			
+			return false;
 		}
 
 		return true;

@@ -133,7 +133,7 @@ public class Room : MonoBehaviour
 
 	}
 
-	private void AddTrapToRoom (Trap newTrap)
+	public void AddTrapToRoom (Trap newTrap)
 	{
 		_traps.Add (newTrap);
 	}
