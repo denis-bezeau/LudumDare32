@@ -113,6 +113,7 @@ public class GameManager : MonoBehaviour
 		}
 
 		CTEventManager.FireEvent(new PlaySFXEvent() {assetName = "fbm_Death"}); //events for everyone
+		Debug.Log("DEATH!!!");
 
 	}
 
