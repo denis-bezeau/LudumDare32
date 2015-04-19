@@ -225,7 +225,8 @@ public class GameManager : MonoBehaviour
 					// Does the spawn room have tiles we can use to position new enemies?
 					int numEnemies = 0;
 					List<GameTile> spawnTiles = _spawnRoom.GameTiles;
-					
+
+#if false
 					if((spawnTiles != null) && (spawnTiles.Count > 0))
 					{
 						// Generate enemies on room tiles
@@ -243,6 +244,7 @@ public class GameManager : MonoBehaviour
 						}
 					}
 					else
+#endif
 					{
 						// Spawn enemies in centre pf the spawn room
 						BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
@@ -250,10 +252,11 @@ public class GameManager : MonoBehaviour
 						{
 							for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
 							{
-								Vector3 min = spawnBox.center-(spawnBox.size*0.5f);
-								Vector3 pos = new Vector3(min.x+(spawnBox.size.x*UnityEngine.Random.value),
-								                          min.y+(spawnBox.size.y*UnityEngine.Random.value),
-								                          min.z+(spawnBox.size.z*UnityEngine.Random.value));
+								// 80% of box size used to avoid walls
+								Vector3 min = spawnBox.center-(spawnBox.size*0.4f);	
+								Vector3 pos = new Vector3(min.x+(spawnBox.size.x*UnityEngine.Random.value*0.8f),
+								                          min.y+(spawnBox.size.y*UnityEngine.Random.value*0.8f),
+								                          min.z+(spawnBox.size.z*UnityEngine.Random.value*0.8f));
 								SpawnEnemy(attackWaves[_attackWaveNumber].prefab, pos, attackWaves[_attackWaveNumber].personality);
 							}
 						}
