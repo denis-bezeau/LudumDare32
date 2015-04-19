@@ -222,34 +222,42 @@ public class GameManager : MonoBehaviour
 				// Generate enemies in spawn room
 				if(_spawnRoom != null)
 				{
-					#if false
-					// Spawn enemies on spawn room tiles
+					// Does the spawn room have tiles we can use to position new enemies?
 					int numEnemies = 0;
 					List<GameTile> spawnTiles = _spawnRoom.GameTiles;
 					
-					foreach(GameTile tile in spawnTiles)
+					if((spawnTiles != null) && (spawnTiles.Count > 0))
 					{
-						if(!tile.IsWallTile)
+						// Generate enemies on room tiles
+						foreach(GameTile tile in spawnTiles)
 						{
-							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
-							
-							// Got enough for attack wave?
-							numEnemies++;
-							if(numEnemies >= attackWaves[_attackWaveNumber].count)
-								break;
+							if(!tile.IsWallTile)
+							{
+								SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
+								
+								// Got enough for attack wave?
+								numEnemies++;
+								if(numEnemies >= attackWaves[_attackWaveNumber].count)
+									break;
+							}
 						}
 					}
-					#else
-					// Spawn enemies in centre pf the spawn room
-					BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
-					if(spawnBox != null)
+					else
 					{
-						for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
+						// Spawn enemies in centre pf the spawn room
+						BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
+						if(spawnBox != null)
 						{
-							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, spawnBox.center, attackWaves[_attackWaveNumber].personality);
+							for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
+							{
+								Vector3 min = spawnBox.center-(spawnBox.size*0.5f);
+								Vector3 pos = new Vector3(min.x+(spawnBox.size.x*UnityEngine.Random.value),
+								                          min.y+(spawnBox.size.y*UnityEngine.Random.value),
+								                          min.z+(spawnBox.size.z*UnityEngine.Random.value));
+								SpawnEnemy(attackWaves[_attackWaveNumber].prefab, pos, attackWaves[_attackWaveNumber].personality);
+							}
 						}
 					}
-					#endif
 				}
 				
 				_nextAttackWaveTime = Time.time + attackWaves[_attackWaveNumber].duration;
