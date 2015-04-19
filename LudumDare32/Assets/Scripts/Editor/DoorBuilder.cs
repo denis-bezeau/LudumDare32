@@ -50,7 +50,7 @@ public class DoorBuilder : EditorWindow
 		_room1 = (Room)EditorGUILayout.ObjectField (_room1, typeof(Room), true);
 		_room2 = (Room)EditorGUILayout.ObjectField (_room2, typeof(Room), true);
 
-		if (GUILayout.Button ("Build Door", boldButton))
+		if (GUILayout.Button ("Build Door"))
 		{
 			// Do all error checking for form data here
 			if (!NameIsUnique ())
@@ -76,7 +76,19 @@ public class DoorBuilder : EditorWindow
 			}
 		}
 
-		if (GUILayout.Button ("Remove missing doors"))
+		// Error displays
+		if (_showNameHelp)
+		{
+			EditorGUILayout.HelpBox ("Please enter a unique door name", MessageType.Error);
+		}
+		if (_showRoomHelp)
+		{
+			EditorGUILayout.HelpBox (_roomHelpString, MessageType.Error);
+		}
+
+		GUILayout.Label ("Door editing tools", EditorStyles.boldLabel);
+
+		if (GUILayout.Button ("Remove missing doors from rooms"))
 		{
 			RemoveMissingDoors ();
 		}
@@ -123,15 +135,7 @@ public class DoorBuilder : EditorWindow
 			EditorGUILayout.HelpBox ("Are you sure? Will remove underlying walls.", MessageType.Warning);
 		}
 
-		// Error displays
-		if (_showNameHelp)
-		{
-			EditorGUILayout.HelpBox ("Please enter a unique door name", MessageType.Error);
-		}
-		if (_showRoomHelp)
-		{
-			EditorGUILayout.HelpBox (_roomHelpString, MessageType.Error);
-		}
+
 
 		EditorGUILayout.EndScrollView ();
 	}
@@ -196,7 +200,7 @@ public class DoorBuilder : EditorWindow
 		Room[] sceneRooms = GameObject.FindObjectsOfType<Room> ();
 		foreach (Room r in sceneRooms)
 		{
-			Debug.Log (r.name + " dad doors cleaned up: " + r.RemoveBadDoors ());
+			Debug.Log (r.name + " bad doors cleaned up: " + r.RemoveBadDoors ());
 		}
 	}
 
