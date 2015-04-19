@@ -123,7 +123,10 @@ public class DoorBuilder : EditorWindow
 
 	private void AddDoorToRoom (Door d, Room r)
 	{
-		if (!r.AddDoorToRoom (d))
+		if (r.AddDoorToRoom (d))
+		{
+			EditorUtility.SetDirty (r);
+		} else
 		{
 			Debug.LogError ("Failed to add door to " + r.name);
 		}
