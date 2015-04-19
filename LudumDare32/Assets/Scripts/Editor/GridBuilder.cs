@@ -49,8 +49,8 @@ public class GridBuilder : EditorWindow
 	{
 		GUILayout.Label ("Build a Grid of size.", EditorStyles.boldLabel);
 
-		_roomWidthTiles = EditorGUILayout.IntField("Room Width: ", _roomWidthTiles);
-		_roomHeightTiles = EditorGUILayout.IntField("Room Height ", _roomHeightTiles);
+		_roomWidthTiles = EditorGUILayout.IntField("Room Height: ", _roomWidthTiles);
+		_roomHeightTiles = EditorGUILayout.IntField("Room Width ", _roomHeightTiles);
 		_roomName = EditorGUILayout.TextField("Room Name: ", _roomName);
 
 		_roomType = (GameEnums.RoomType)EditorGUILayout.EnumPopup ("Room Type", _roomType);
