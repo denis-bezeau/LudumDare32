@@ -25,14 +25,27 @@ public class GameTile : MonoBehaviour
 		{
 			if(_renderer.material != null)
 			{
-				_renderer.material.color = Color.green;
+				if (GameManager.GetInstance().IsPlacingTrap())
+				{
+					if (GameManager.GetInstance().IsTileValid(this))
+					{
+						_renderer.material.color = Color.green;
+					}
+					else
+					{
+						_renderer.material.color = Color.red;
+					}
+				}
 			}
 		}
 	}
 
 	void OnMouseUp()
 	{
-		CTEventManager.FireEvent(new PlaceTrapEvent() { position = transform.position });
+		if (GameManager.GetInstance().IsTileValid(this))
+		{
+			CTEventManager.FireEvent(new PlaceTrapEvent() { gameTile = this });
+		}
 	}
 
 	void OnMouseOver()

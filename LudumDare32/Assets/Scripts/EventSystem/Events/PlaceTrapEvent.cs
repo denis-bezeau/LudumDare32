@@ -2,5 +2,5 @@
 
 public class PlaceTrapEvent : CTEvent
 {
-	public Vector3 position;
+	public GameTile gameTile;
 }

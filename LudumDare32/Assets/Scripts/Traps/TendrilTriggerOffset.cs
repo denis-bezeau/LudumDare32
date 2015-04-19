@@ -16,7 +16,7 @@ public class TendrilTriggerOffset : MonoBehaviour {
 	void Update () 
 	{
 		timer += 1.0f*Time.deltaTime;
-		Debug.Log(timer);
+//		Debug.Log(timer);
 		if(isAttack == true)
 		{
 			if(timer >= randomOffset)

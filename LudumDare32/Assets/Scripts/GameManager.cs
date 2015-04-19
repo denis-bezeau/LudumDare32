@@ -234,7 +234,7 @@ public class GameManager : MonoBehaviour
 			{
 				Debug.Log("OnPlaceTrapEvent cost =" + cost + " , energy=" + energy);
 				energy -= (float)cost;
-				InstantiateTrapAtLocation(currentSelectedTrap, eventData.position);
+				InstantiateTrapAtLocation(currentSelectedTrap, eventData.gameTile);
 			}
 		}
 		else
@@ -243,27 +243,66 @@ public class GameManager : MonoBehaviour
 		}
 	}
 	
-	public void InstantiateTrapAtLocation(Trap.TrapType type, Vector3 position)
+	public void InstantiateTrapAtLocation(Trap.TrapType type, GameTile tile)
 	{
-		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + position);
+		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + tile.transform.position);
 		switch (type)
 		{
 			case Trap.TrapType.Door:
 				{
-					GameObject.Instantiate(DoorTrapPrefab, position, Quaternion.identity);
+					currentSelectedTrap = Trap.TrapType.None;
+					GameObject.Instantiate(DoorTrapPrefab, tile.transform.position, Quaternion.identity);
 					break;
 				}
 			case Trap.TrapType.Plant:
 				{
-					GameObject.Instantiate(PlantTrapPrefab, position, Quaternion.identity);
+					currentSelectedTrap = Trap.TrapType.None;
+					GameObject.Instantiate(PlantTrapPrefab, tile.transform.position, Quaternion.identity);
 					break;
 				}
 			case Trap.TrapType.Marble:
 				{
-					GameObject.Instantiate(MarbleTrapPrefab, position, Quaternion.identity);
+					currentSelectedTrap = Trap.TrapType.None;
+					GameObject.Instantiate(MarbleTrapPrefab, tile.transform.position, Quaternion.identity);
+					
 					break;
 				}
 		}
-		currentSelectedTrap = Trap.TrapType.None;
+		
+	}
+
+	public bool IsTileValid(GameTile tile)
+	{
+		if (tile.GetComponent<BoxCollider>() != null)
+		{
+			return false;
+		}
+
+
+		//door traps need to be on doors
+		if (currentSelectedTrap == Trap.TrapType.Door)
+		{
+			Door doorComponent = tile.transform.parent.GetComponent<Door>();
+			if (doorComponent == null)
+			{
+				return false;
+			}
+		}
+		//regular traps need to be not on doors
+		else
+		{
+			Door doorComponent = tile.transform.parent.GetComponent<Door>();
+			if (doorComponent != null)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public bool IsPlacingTrap()
+	{
+		return ((currentSelectedTrap != Trap.TrapType.None) && (currentSelectedTrap != Trap.TrapType.COUNT));
 	}
 }
