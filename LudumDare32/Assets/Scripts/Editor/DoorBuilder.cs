@@ -13,6 +13,8 @@ public class DoorBuilder : EditorWindow
 
 	private string _doorName = "door";
 
+	private static readonly Vector3 DEFAULT_DOOR_POS = new Vector3 (0f, 0f, -0.01f);
+
 	private static readonly int kTileWidth = 1;
 	private static readonly int kTileHeight = 1;
 	
@@ -102,7 +104,7 @@ public class DoorBuilder : EditorWindow
 			return;
 		}
 
-		doorObj.transform.localPosition = Vector3.zero;
+		doorObj.transform.localPosition = DEFAULT_DOOR_POS;
 		doorObj.name = _doorName;
 
 		Door theDoor = doorObj.GetComponent<Door> ();
