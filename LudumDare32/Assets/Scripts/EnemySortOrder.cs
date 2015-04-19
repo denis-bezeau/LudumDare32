@@ -4,6 +4,7 @@ using System.Collections;
 public class EnemySortOrder : MonoBehaviour {
 
 	private GameObject levelTopNull;
+	public GameObject SpriteObject;
 
 
 	void Start () 
@@ -14,12 +15,12 @@ public class EnemySortOrder : MonoBehaviour {
 
 	void Update () 
 	{
-		Vector3 currentPos = transform.localPosition;
+		Vector3 currentPos = transform.position;
 
-		float diff = currentPos.y - levelTopNull.transform.localPosition.y;
-		Vector3 newTransPos = new Vector3(currentPos.x, currentPos.y, (diff*0.1f)+0.1f);
+		float diff = currentPos.y - levelTopNull.transform.position.y;
+		Vector3 newTransPos = new Vector3(SpriteObject.transform.position.x, SpriteObject.transform.position.y, (diff*0.1f)+0.1f);
 
-		transform.localPosition = newTransPos;
+		SpriteObject.transform.position = newTransPos;
 	
 	}
 }
