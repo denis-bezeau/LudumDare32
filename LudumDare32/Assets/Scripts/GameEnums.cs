@@ -13,8 +13,9 @@ public class GameEnums
 	public enum TileSet
 	{
 		TileSet0 = 0,
+		TileSet1 = 1,
 
-		Count
+		//Count
 	}
 
 	public enum TileType
