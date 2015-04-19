@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour 
-{
+{	
 	[System.Serializable]
 	public class AttackWave
 	{
@@ -23,10 +23,12 @@ public class GameManager : MonoBehaviour
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
 	public Animator Hud;
-	public GameObject PlantTrapPrefab;
-	public GameObject MarbleTrapPrefab;
-	public GameObject DoorTrapPrefab;
 	public AttackWave[] attackWaves;
+
+	private GameObject PlantTrapPrefab;
+	private GameObject MarbleTrapPrefab;
+	private GameObject DoorTrapPrefab;
+
 
 	private int currentEscapeeCount;
 	private GameObject DefaultLevel;
@@ -72,6 +74,9 @@ public class GameManager : MonoBehaviour
 
 	public void Awake()
 	{
+		instance = this;
+		SetUpTrapData();
+
 		CTEventManager.AddListener<KillEnemyEvent>(OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent>(OnRestartGame);
 		CTEventManager.AddListener<EscapeEvent>(OnEscapeEvent);
@@ -83,7 +88,7 @@ public class GameManager : MonoBehaviour
 		PlayerPrefs.SetFloat("speechVolume", 0.85f);
 
 		SoundManager.GetInstance();
-		SetUpTrapData();
+		
 	}
 
 	public void OnDestroy()
@@ -93,54 +98,6 @@ public class GameManager : MonoBehaviour
 		CTEventManager.RemoveListener<EscapeEvent>(OnEscapeEvent);
 		CTEventManager.RemoveListener<BuyTrapEvent>(OnBuyTrapEvent);
 		CTEventManager.RemoveListener<PlaceTrapEvent>(OnPlaceTrapEvent);
-	}
-
-	/// @brief	Manage attack waves
-	private void UpdateAttackWaves()
-	{
-		// More attack waves to generate?
-		if(_attackWaveNumber < attackWaves.Length)
-		{
-			// Time to generate the next attack wave?
-			if(Time.time > _nextAttackWaveTime)
-			{
-				// Generate enemies in spawn room
-				if(_spawnRoom != null)
-				{
-#if false
-					// Spawn enemies on spawn room tiles
-					int numEnemies = 0;
-					List<GameTile> spawnTiles = _spawnRoom.GameTiles;
-
-					foreach(GameTile tile in spawnTiles)
-					{
-						if(!tile.IsWallTile)
-						{
-							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
-
-							// Got enough for attack wave?
-							numEnemies++;
-							if(numEnemies >= attackWaves[_attackWaveNumber].count)
-								break;
-						}
-					}
-#else
-					// Spawn enemies in centre pf the spawn room
-					BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
-					if(spawnBox != null)
-					{
-						for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
-						{
-							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, spawnBox.center, attackWaves[_attackWaveNumber].personality);
-						}
-					}
-#endif
-				}
-
-				_nextAttackWaveTime = Time.time + attackWaves[_attackWaveNumber].duration;
-				_attackWaveNumber++;
-			}
-		}
 	}
 
 	public void OnKillEnemyEvent(KillEnemyEvent eventData)
@@ -210,7 +167,7 @@ public class GameManager : MonoBehaviour
 		// Find spawn and escape rooms rooms
 		_spawnRoom = FindObjectOfType(typeof(SpawnRoom)) as SpawnRoom;
 		_escapeRoom = FindObjectOfType(typeof(EscapeRoom)) as EscapeRoom;
-
+		
 		// Start level
 		_attackWaveNumber = 0;
 		_nextAttackWaveTime = 0.0f;
@@ -248,11 +205,60 @@ public class GameManager : MonoBehaviour
 		energy += energyRegenSpeed * Time.deltaTime;
 	}
 
+	/// @brief	Manage attack waves
+	private void UpdateAttackWaves()
+	{
+		// More attack waves to generate?
+		if(_attackWaveNumber < attackWaves.Length)
+		{
+			// Time to generate the next attack wave?
+			if(Time.time > _nextAttackWaveTime)
+			{
+				// Generate enemies in spawn room
+				if(_spawnRoom != null)
+				{
+					#if false
+					// Spawn enemies on spawn room tiles
+					int numEnemies = 0;
+					List<GameTile> spawnTiles = _spawnRoom.GameTiles;
+					
+					foreach(GameTile tile in spawnTiles)
+					{
+						if(!tile.IsWallTile)
+						{
+							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, tile.transform.position, attackWaves[_attackWaveNumber].personality);
+							
+							// Got enough for attack wave?
+							numEnemies++;
+							if(numEnemies >= attackWaves[_attackWaveNumber].count)
+								break;
+						}
+					}
+					#else
+					// Spawn enemies in centre pf the spawn room
+					BoxCollider spawnBox = _spawnRoom.GetComponent<BoxCollider>();
+					if(spawnBox != null)
+					{
+						for(int i=0; i<attackWaves[_attackWaveNumber].count; i++)
+						{
+							SpawnEnemy(attackWaves[_attackWaveNumber].prefab, spawnBox.center, attackWaves[_attackWaveNumber].personality);
+						}
+					}
+					#endif
+				}
+				
+				_nextAttackWaveTime = Time.time + attackWaves[_attackWaveNumber].duration;
+				_attackWaveNumber++;
+			}
+		}
+	}
+
 	public void SetUpTrapData()
 	{
 		energy = 0;
 
 		trapCosts = new int [(int)Trap.TrapType.COUNT];
+		trapCosts[(int)Trap.TrapType.None] = 0;
 		trapCosts[(int)Trap.TrapType.Door] = 10;
 		trapCosts[(int)Trap.TrapType.Plant] = 30;
 		trapCosts[(int)Trap.TrapType.Marble] = 20;
@@ -260,7 +266,12 @@ public class GameManager : MonoBehaviour
 
 	public int GetTrapCost(Trap.TrapType type)
 	{
-		return trapCosts[(int)type];
+		if ((int)type < (int)Trap.TrapType.COUNT)
+		{
+			return trapCosts[(int)type];
+		}
+
+		return 0;
 	}
 
 	public void OnBuyTrapEvent(BuyTrapEvent eventData)
@@ -288,7 +299,7 @@ public class GameManager : MonoBehaviour
 			{
 				Debug.Log("OnPlaceTrapEvent cost =" + cost + " , energy=" + energy);
 				energy -= (float)cost;
-				InstantiateTrapAtLocation(currentSelectedTrap, eventData.position);
+				InstantiateTrapAtLocation(currentSelectedTrap, eventData.gameTile);
 			}
 		}
 		else
@@ -297,27 +308,108 @@ public class GameManager : MonoBehaviour
 		}
 	}
 	
-	public void InstantiateTrapAtLocation(Trap.TrapType type, Vector3 position)
+	public void InstantiateTrapAtLocation(Trap.TrapType type, GameTile tile)
 	{
-		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + position);
+		Debug.Log("InstantiateTrapAtLocation type=" + type + ", position=" + tile.transform.position);
 		switch (type)
 		{
 			case Trap.TrapType.Door:
 				{
-					GameObject.Instantiate(DoorTrapPrefab, position, Quaternion.identity);
+					currentSelectedTrap = Trap.TrapType.None;
+					if (DoorTrapPrefab == null)
+					{
+						DoorTrapPrefab = Resources.Load("Prefabs/traps/DoorTrap/DoorTrap") as GameObject;
+					}
+					GameObject newTrapGameObject = GameObject.Instantiate(DoorTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
+					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
+					tile.currentTrap = newTrap;
+					if (tile.parentRoom != null)
+					{
+						tile.parentRoom.AddTrapToRoom(newTrap);
+					}
+					
 					break;
 				}
 			case Trap.TrapType.Plant:
 				{
-					GameObject.Instantiate(PlantTrapPrefab, position, Quaternion.identity);
+					currentSelectedTrap = Trap.TrapType.None;
+					if (PlantTrapPrefab == null)
+					{
+						PlantTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
+					}
+					GameObject newTrapGameObject = GameObject.Instantiate(PlantTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
+					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
+					tile.currentTrap = newTrap;
+					if (tile.parentRoom != null)
+					{
+						tile.parentRoom.AddTrapToRoom(newTrap);
+					}
 					break;
 				}
 			case Trap.TrapType.Marble:
 				{
-					GameObject.Instantiate(MarbleTrapPrefab, position, Quaternion.identity);
+					currentSelectedTrap = Trap.TrapType.None;
+					if (MarbleTrapPrefab == null)
+					{
+						MarbleTrapPrefab = Resources.Load("Prefabs/traps/plantTrap/fernTrap") as GameObject;
+					}
+					Debug.Log(MarbleTrapPrefab);
+					GameObject newTrapGameObject = GameObject.Instantiate(MarbleTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
+					newTrapGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+					Trap newTrap = newTrapGameObject.GetComponent<Trap>();
+					tile.currentTrap = newTrap;
+					if (tile.parentRoom != null)
+					{
+						tile.parentRoom.AddTrapToRoom(newTrap);
+					}
+					
 					break;
 				}
 		}
-		currentSelectedTrap = Trap.TrapType.None;
+		
+	}
+
+	public bool IsTileValid(GameTile tile)
+	{
+		if (tile.GetComponent<BoxCollider>() != null)
+		{
+			return false;
+		}
+
+
+		//door traps need to be on doors
+		if (currentSelectedTrap == Trap.TrapType.Door)
+		{
+			Door doorComponent = tile.transform.parent.GetComponent<Door>();
+			if (doorComponent == null)
+			{
+				return false;
+			}
+		}
+		//regular traps need to be not on doors
+		else
+		{
+			Door doorComponent = tile.transform.parent.GetComponent<Door>();
+			if (doorComponent != null)
+			{
+				return false;
+			}
+		}
+
+		Debug.Log("tile.currentTrap=" + tile.currentTrap);
+		if (tile.currentTrap != null)
+		{
+			
+			return false;
+		}
+
+		return true;
+	}
+
+	public bool IsPlacingTrap()
+	{
+		return ((currentSelectedTrap != Trap.TrapType.None) && (currentSelectedTrap != Trap.TrapType.COUNT));
 	}
 }
