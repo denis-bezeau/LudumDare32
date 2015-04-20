@@ -38,7 +38,7 @@ public class PersonStats : MonoBehaviour
 		deathSounds_redShirt.Add("audio/sfx/enemy_rds_GetHit");
 		deathSounds_redShirt.Add("audio/sfx/enemy_rds_GetHit_Plant");
 
-		spawnSounds_redShirt.Add("audio/sfx/enemy_rds_Random_StopLookingAtMe");
+		spawnSounds_redShirt.Add("audio/sfx/enemy_rds_StopLookingAtMe");
 	}
 
 	public int HP

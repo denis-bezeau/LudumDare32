@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour
 
 		if (musicStarted == false)
 		{
-			CTEventManager.FireEvent (new PlayMusicEvent () { assetName = "audio/music/climactic-final-battle" });
+			CTEventManager.FireEvent (new PlayMusicEvent () { assetName = "audio/music/loops_horror_short" });
 			musicStarted = true;
 		}
 
