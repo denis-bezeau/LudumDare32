@@ -26,12 +26,14 @@ public class PersonMotion : MonoBehaviour
 		k_none			= 0,
 		k_waitForTarget,
 		k_walkToTarget,
-		k_waitForTime,
+		k_backOffForTime,
 		k_dead
 	}
 
-	private const float 			k_maxWaitTime 	= 2.0f;
-	private const float				k_minDistance	= 0.5f;
+	private const float 			k_maxWaitTime 		= 2.0f;
+	private const float				k_minDistance		= 0.5f;
+	private const float 			k_obstructedTime 	= 2.0f;
+	private const float 			k_minObstructedVel 	= 0.5f;
 
 	/***************************** SUB-CLASSES ******************************/
 	
@@ -52,8 +54,8 @@ public class PersonMotion : MonoBehaviour
 
 	private EMotionState			m_motionState = EMotionState.k_waitForTarget;		//!< Motion FSM
 	private	Vector3					m_targetPoint;										//!< Point to walk towards (probably a door)
-	private float					m_waitTime;											//!< Time to wait until
-
+	private float					m_backOffTime;										//!< Time to back off for
+	private float					m_obstructionTimer = 0.0f;							//!< For timing how long we cant move
 
 	/**************************** PUBLIC METHODS ****************************/
 
@@ -83,6 +85,28 @@ public class PersonMotion : MonoBehaviour
 	public void Die()
 	{
 		StateChange(EMotionState.k_dead);
+	}
+	
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Are we unable to reach our target?
+	//////////////////////////////////////////////////////////////////////////
+	public bool IsObstructed()
+	{
+		if(m_motionState == EMotionState.k_backOffForTime)
+			return true;
+		
+		return false;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Are we stuck and unable to move? (eg. jammed in a wall)
+	//////////////////////////////////////////////////////////////////////////
+	public bool IsStuck()
+	{
+		if((m_motionState == EMotionState.k_backOffForTime) && (m_obstructionTimer > k_obstructedTime))
+			return true;
+
+		return false;
 	}
 
 	/*************************** PRIVATE METHODS ****************************/
@@ -124,10 +148,13 @@ public class PersonMotion : MonoBehaviour
 			}
 			break;
 
-			case EMotionState.k_waitForTime:
+			case EMotionState.k_backOffForTime:
 			{
+				// Back away from target to allow others to get by
+				WalkAwayFromTarget();
+
 				// Once we've waited long enough start walking again
-				if(Time.time >= m_waitTime)
+				if(Time.time >= m_backOffTime)
 					StateChange(EMotionState.k_walkToTarget);
 			}
 			break;
@@ -148,7 +175,9 @@ public class PersonMotion : MonoBehaviour
 		{
 			case EMotionState.k_waitForTarget:
 			{
-				m_rigidBody.velocity = Vector3.zero;
+				// Keep momentum as we walk through doors? 
+				// Yes = helps get through door and not get stuck on wall, No = stops us over shooting doors when walking at an angle to them
+				//m_rigidBody.velocity = Vector3.zero;
 			}
 			break;
 
@@ -157,11 +186,12 @@ public class PersonMotion : MonoBehaviour
 			}
 			break;
 				
-			case EMotionState.k_waitForTime:
+			case EMotionState.k_backOffForTime:
 			{
-				// Stop walking for a random amount of time
+				// Back up for a random amount of time
 				m_rigidBody.velocity = Vector3.zero;
-				m_waitTime = Time.time + (UnityEngine.Random.value * k_maxWaitTime);
+				m_obstructionTimer = 0.0f;
+				m_backOffTime = Time.time + (UnityEngine.Random.value * k_maxWaitTime);
 			}
 			break;
 				
@@ -196,11 +226,36 @@ public class PersonMotion : MonoBehaviour
 		else
 		{
 			// No - keep moving towards our target
-			m_rigidBody.AddForce(delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);//Impulse);
+			m_rigidBody.AddForce(delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);
+
+			// If we're not moving (eg. if colliding with a wall or another person) then bump the obstruction timer
+			if(m_rigidBody.velocity.magnitude < k_minObstructedVel)
+				m_obstructionTimer += Time.deltaTime;
+			else
+				m_obstructionTimer = 0.0f;
+
+			// If we're obstructed then back off for a while
+			if(m_obstructionTimer > k_obstructedTime)
+				StateChange(EMotionState.k_backOffForTime);
 		}
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Walk away from target to allow others to get by.
+	//////////////////////////////////////////////////////////////////////////
+	private void WalkAwayFromTarget()
+	{
+		Vector3 delta = transform.position - m_targetPoint;
+		delta.z = 0.0f;
 
+		m_rigidBody.AddForce(delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);
+
+		// If we're not moving (eg. if colliding with a wall or another person) then bump the obstruction timer
+		if(m_rigidBody.velocity.magnitude < k_minObstructedVel)
+			m_obstructionTimer += Time.deltaTime;
+		else
+			m_obstructionTimer = 0.0f;
+	}
 }
 
 

@@ -105,6 +105,9 @@ public class Room : MonoBehaviour
 			Debug.Log ("Person entered room");
 			_people.Add (person);
 
+			// Notify PersonAI they're touching this room
+			person.EnterRoomPhysically(this);
+
 			// Traps now trigger on people walking over them.
 //			for (int i = 0; i < _traps.Count; ++i)
 //			{
@@ -120,6 +123,10 @@ public class Room : MonoBehaviour
 		{
 			Debug.Log ("Person left room");
 			_people.Remove (person);
+
+			// Notify PersonAI they're no longer touching this room
+			person.LeaveRoomPhysically(this);
+
 			// Traps now trigger on people walking over them.
 //			for (int i = 0; i < _traps.Count; ++i)
 //			{

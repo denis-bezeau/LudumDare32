@@ -61,7 +61,8 @@ public class PersonAI : MonoBehaviour
 
 	private Door					m_targetDoor = null;								//!< Current door
 	private Door					m_previousDoor = null;								//!< Previous door we came through
-	private Room					m_currentRoom = null;								//!< Current room
+	private Room					m_currentRoom = null;								//!< Room we walked through a door in to
+	private List<Room>				m_physicalRooms = new List<Room>();					//!< Rooms we are physically touching
 	private float					m_nextDoorBashTime = 0.0f;							//!< Time to bash the door next
 	private PersonStats				m_PersonStats = null;								//!< stats of the person e.g. health
 
@@ -88,6 +89,9 @@ public class PersonAI : MonoBehaviour
 	//////////////////////////////////////////////////////////////////////////
 	public void Kill()
 	{
+		if(m_aiState == EAIState.k_dead)
+			return;
+
 		Debug.Log("kill");
 		KillEnemyEvent killEvent = new KillEnemyEvent();
 		killEvent.count = 1;
@@ -112,7 +116,25 @@ public class PersonAI : MonoBehaviour
 	{
 		m_PersonStats = newStats;
 	}
-	
+
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Add this room to the list we are physically touching.
+	//////////////////////////////////////////////////////////////////////////
+	public void EnterRoomPhysically(Room newRoom)
+	{
+		if(!m_physicalRooms.Contains(newRoom))
+		   m_physicalRooms.Add(newRoom);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	/// @brief	Remove this room from the list we are physically touching.
+	//////////////////////////////////////////////////////////////////////////
+	public void LeaveRoomPhysically(Room oldRoom)
+	{
+		if(m_physicalRooms.Contains(oldRoom))
+			m_physicalRooms.Remove(oldRoom);
+	}
+
 	/*************************** PRIVATE METHODS ****************************/
 	
 	//////////////////////////////////////////////////////////////////////////
@@ -146,6 +168,19 @@ public class PersonAI : MonoBehaviour
 				if(m_personMotion.HasReachedTarget())
 				{
 					StateChange(EAIState.k_bashDownDoor);
+				}
+				else
+				// If we're obstructed because we've been physically pushed out of the room then retarget a door from a room we are physically in
+				if(m_personMotion.IsObstructed() && !m_physicalRooms.Contains(m_currentRoom))
+				{
+					m_currentRoom = m_physicalRooms[0];
+					StateChange(EAIState.k_chooseADoor);
+				}
+				else
+				// If we're stuck in a wall then kill us
+				if(m_personMotion.IsStuck())
+				{
+					Kill();
 				}
 			}
 			break;
@@ -244,7 +279,7 @@ public class PersonAI : MonoBehaviour
 			int doorIndex = 0;
 			
 			// Choose which door to walk to
-			if(m_personality == EPersonality.k_explorer)
+			if((m_personality == EPersonality.k_aggressive) || (m_personality == EPersonality.k_explorer))
 			{
 				// Explorers pick a random door
 				doorIndex = (int)(UnityEngine.Random.value*m_currentRoom.Doors.Count);
@@ -261,7 +296,7 @@ public class PersonAI : MonoBehaviour
 			m_targetDoor = m_currentRoom.Doors[doorIndex];
 			
 			// If this is the door we came through then try another one
-			if((m_targetDoor == m_previousDoor) && (m_currentRoom.Doors.Count > 1))
+			if(((m_targetDoor == m_previousDoor) || (m_targetDoor.GetOtherRoom(m_currentRoom) == m_spawnRoom)) && (m_currentRoom.Doors.Count > 1))
 			{
 				doorIndex++;
 				if(doorIndex >= m_currentRoom.Doors.Count)
