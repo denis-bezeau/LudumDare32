@@ -13,10 +13,15 @@ public class SpawnRoom : Room
 	new public void Awake ()
 	{
 		base.Awake ();
+	}
 
-		Debug.Log ("Checking for available exit...");
+	public void CheckForExitPath ()
+	{
 		// Check for open path immediately
 		List<Room> checkedRooms = new List<Room> ();
-		this.OpenPathToExitExists (ref checkedRooms);
+		if (!this.OpenPathToExitExists (ref checkedRooms))
+		{
+			Debug.LogError (this.name + " does not have a valid path to an EscapeRoom");
+		}
 	}
 }

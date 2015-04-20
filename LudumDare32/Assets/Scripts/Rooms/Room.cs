@@ -97,22 +97,15 @@ public class Room : MonoBehaviour
 		return badTiles.Count;
 	}
 
-	public void OnTriggerEnter(Collider col)
+	public void OnTriggerEnter (Collider col)
 	{
 		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
 		if (person != null)
 		{
-			Debug.Log ("Person entered room");
 			_people.Add (person);
 
 			// Notify PersonAI they're touching this room
-			person.EnterRoomPhysically(this);
-
-			// Traps now trigger on people walking over them.
-//			for (int i = 0; i < _traps.Count; ++i)
-//			{
-//				//_traps[i].OnEnterTrap(person);
-//			}
+			person.EnterRoomPhysically (this);
 		}
 	}
 
@@ -121,17 +114,10 @@ public class Room : MonoBehaviour
 		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
 		if (person != null)
 		{
-			Debug.Log ("Person left room");
 			_people.Remove (person);
 
 			// Notify PersonAI they're no longer touching this room
-			person.LeaveRoomPhysically(this);
-
-			// Traps now trigger on people walking over them.
-//			for (int i = 0; i < _traps.Count; ++i)
-//			{
-//				_traps[i].OnExitTrap(person);
-//			}
+			person.LeaveRoomPhysically (this);
 		}
 	}
 
@@ -229,7 +215,7 @@ public class Room : MonoBehaviour
 	{
 		if (this is EscapeRoom)
 		{
-			Debug.Log ("Route ends at " + this.name);
+			//Debug.Log ("Route ends at " + this.name);
 			return true;
 		}
 		
@@ -248,7 +234,7 @@ public class Room : MonoBehaviour
 					// If we found an open path, head on back
 					if (nextRoom.OpenPathToExitExists (ref checkedRooms))
 					{
-						Debug.Log ("Route includes " + this.name);
+						//Debug.Log ("Route includes " + this.name);
 						return true;
 					}
 				}
