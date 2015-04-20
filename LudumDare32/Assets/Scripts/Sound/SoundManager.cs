@@ -4,167 +4,192 @@ using System.Collections.Generic;
 
 public class PlaySFXEvent: CTEvent
 {
-    public string assetName;
+	public string assetName;
 }
 
 public class PlayMusicEvent : CTEvent
 {
-    public string assetName;
+	public string assetName;
 }
 
 public class PlaySpeechEvent : CTEvent
 {
-    public string assetName;
+	public string assetName;
 }
 
 public class SoundManager : MonoBehaviour
 {
-    private static SoundManager instance;
+	private static SoundManager instance;
 
-    static private AudioSource musicAudioSource;
-    static private AudioSource sfxAudioSource;
-    static private AudioSource speechAudiosource;
+	private const float SFX_COOLDOWN = 1.5f;
 
-    public float musicVolume { get; set;}
-    public float sfxVolume { get; set; }
-    public float speechVolume { get; set; }
+	static private AudioSource musicAudioSource;
+	static private AudioSource sfxAudioSource;
+	static private AudioSource speechAudiosource;
 
-    private Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
-    private Dictionary<string, AudioClip> musicClips = new Dictionary<string, AudioClip>();
+	public float musicVolume { get; set; }
+	public float sfxVolume { get; set; }
+	public float speechVolume { get; set; }
+
+	private Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip> ();
+	private Dictionary<string, float> audioCoolDowns = new Dictionary<string, float> (); // This isn't great, but whatever
+	private Dictionary<string, AudioClip> musicClips = new Dictionary<string, AudioClip> ();
     
 
-    public static SoundManager GetInstance()
-    {
-        if (instance == null)
-        {
-            GameObject soundManagerGameObject = GameObject.FindGameObjectWithTag("sound_manager");
-            if (soundManagerGameObject != null)
-            {
-                instance = soundManagerGameObject.GetComponent<SoundManager>();
+	public static SoundManager GetInstance ()
+	{
+		if (instance == null)
+		{
+			GameObject soundManagerGameObject = GameObject.FindGameObjectWithTag ("sound_manager");
+			if (soundManagerGameObject != null)
+			{
+				instance = soundManagerGameObject.GetComponent<SoundManager> ();
 
-                if (instance == null)
-                {
-                    musicAudioSource = soundManagerGameObject.AddComponent<AudioSource>();
-                    sfxAudioSource = soundManagerGameObject.AddComponent<AudioSource>();
-                    speechAudiosource = soundManagerGameObject.AddComponent<AudioSource>();
-                    instance = soundManagerGameObject.AddComponent<SoundManager>();
-                }
-            }
-            else
-            {
-                soundManagerGameObject = new GameObject();
-                soundManagerGameObject.name = "sound_manager";
-                soundManagerGameObject.tag = "sound_manager";
+				if (instance == null)
+				{
+					musicAudioSource = soundManagerGameObject.AddComponent<AudioSource> ();
+					sfxAudioSource = soundManagerGameObject.AddComponent<AudioSource> ();
+					speechAudiosource = soundManagerGameObject.AddComponent<AudioSource> ();
+					instance = soundManagerGameObject.AddComponent<SoundManager> ();
+				}
+			}
+			else
+			{
+				soundManagerGameObject = new GameObject ();
+				soundManagerGameObject.name = "sound_manager";
+				soundManagerGameObject.tag = "sound_manager";
 
-                musicAudioSource = soundManagerGameObject.AddComponent<AudioSource>();
-                sfxAudioSource = soundManagerGameObject.AddComponent<AudioSource>();
-                speechAudiosource = soundManagerGameObject.AddComponent<AudioSource>();
-                instance = soundManagerGameObject.AddComponent<SoundManager>();
+				musicAudioSource = soundManagerGameObject.AddComponent<AudioSource> ();
+				sfxAudioSource = soundManagerGameObject.AddComponent<AudioSource> ();
+				speechAudiosource = soundManagerGameObject.AddComponent<AudioSource> ();
+				instance = soundManagerGameObject.AddComponent<SoundManager> ();
 
-            }  
-        }
+			}  
+		}
 
-        return instance;
-    }
-
-    public static void DestroyInstance()
-    {
-        if (instance != null)
-        {
-            instance.UnloadAudioClips();
-            instance.UnloadMusic();
-
-            GameObject.Destroy(instance.gameObject);
-            instance = null;
-        }
-    }
-
-	public void Awake () 
-    {
-        DontDestroyOnLoad(transform.gameObject);
-
-        CTEventManager.AddListener<PlaySFXEvent>(OnPlaySFX);
-        CTEventManager.AddListener<PlayMusicEvent>(OnPlayMusic);
-        CTEventManager.AddListener<PlaySpeechEvent>(OnPlaySpeech);
+		return instance;
 	}
 
-    public void OnDestroy()
-    {
-        CTEventManager.RemoveListener<PlaySFXEvent>(OnPlaySFX);
-        CTEventManager.RemoveListener<PlayMusicEvent>(OnPlayMusic);
-        CTEventManager.RemoveListener<PlaySpeechEvent>(OnPlaySpeech);  
-    }
+	public static void DestroyInstance ()
+	{
+		if (instance != null)
+		{
+			instance.UnloadAudioClips ();
+			instance.UnloadMusic ();
 
-    public void Start()
-    {
-        sfxVolume = PlayerPrefs.GetFloat("sfxVolume");
-        musicVolume = PlayerPrefs.GetFloat("musicVolume");
-        speechVolume = PlayerPrefs.GetFloat("speechVolume");
-    }
+			GameObject.Destroy (instance.gameObject);
+			instance = null;
+		}
+	}
 
-    private void OnPlaySFX(PlaySFXEvent eventData)
-    {
-        if (audioClips.ContainsKey(eventData.assetName))
-        {
-            sfxAudioSource.PlayOneShot(audioClips[eventData.assetName], musicVolume);
-        }
-        else
-        {
-            AudioClip audioClip = Resources.Load(eventData.assetName) as AudioClip;
-            audioClips.Add(eventData.assetName, audioClip);
-            sfxAudioSource.PlayOneShot(audioClip, sfxVolume);
-        }
-    }
+	public void Awake ()
+	{
+		DontDestroyOnLoad (transform.gameObject);
 
-    private void OnPlaySpeech(PlaySpeechEvent eventData)
-    {
-        if (audioClips.ContainsKey(eventData.assetName))
-        {
-            speechAudiosource.PlayOneShot(audioClips[eventData.assetName], musicVolume);
-        }
-        else
-        {
-            AudioClip audioClip = Resources.Load(eventData.assetName) as AudioClip;
-            audioClips.Add(eventData.assetName, audioClip);
-            speechAudiosource.PlayOneShot(audioClip, speechVolume);
-        }
-    }
+		CTEventManager.AddListener<PlaySFXEvent> (OnPlaySFX);
+		CTEventManager.AddListener<PlayMusicEvent> (OnPlayMusic);
+		CTEventManager.AddListener<PlaySpeechEvent> (OnPlaySpeech);
+	}
 
-    private void OnPlayMusic(PlayMusicEvent eventData)
-    {
-        if (musicClips.ContainsKey(eventData.assetName))
-        {
-            musicAudioSource.clip = musicClips[eventData.assetName];
-            musicAudioSource.volume = musicVolume;
-            musicAudioSource.loop = true;
-            musicAudioSource.Play();
-        }
-        else
-        {
-            AudioClip musicClip = Resources.Load(eventData.assetName) as AudioClip;
-            musicClips.Add(eventData.assetName, musicClip);
-            musicAudioSource.clip = musicClip;
-            musicAudioSource.volume = musicVolume;
-            musicAudioSource.loop = true;
-            musicAudioSource.Play();
-        }
-    }
+	public void OnDestroy ()
+	{
+		CTEventManager.RemoveListener<PlaySFXEvent> (OnPlaySFX);
+		CTEventManager.RemoveListener<PlayMusicEvent> (OnPlayMusic);
+		CTEventManager.RemoveListener<PlaySpeechEvent> (OnPlaySpeech);
+	}
 
-    public void UnloadAudioClips()
-    {
-        foreach (KeyValuePair<string, AudioClip> currentAudioClip in audioClips)
-        {
-            Resources.UnloadAsset(currentAudioClip.Value);
-        }
-        audioClips.Clear();
-    }
+	public void Start ()
+	{
+		sfxVolume = PlayerPrefs.GetFloat ("sfxVolume");
+		musicVolume = PlayerPrefs.GetFloat ("musicVolume");
+		speechVolume = PlayerPrefs.GetFloat ("speechVolume");
+	}
 
-    public void UnloadMusic()
-    {
-        foreach (KeyValuePair<string, AudioClip> currentMusicClip in musicClips)
-        {
-            Resources.UnloadAsset(currentMusicClip.Value);
-        }
-        musicClips.Clear();
-    }
+	public void Update ()
+	{
+		string[] keys = new string[audioCoolDowns.Count];
+		audioCoolDowns.Keys.CopyTo (keys, 0);
+
+		// Reduce cooldowns
+		foreach (string key in keys)
+		{
+			if (audioCoolDowns [key] > 0f)
+			{
+				audioCoolDowns [key] -= Time.deltaTime;
+				if (audioCoolDowns [key] < 0f)
+					audioCoolDowns [key] = 0f;
+			}
+		}
+	}
+
+	private void OnPlaySFX (PlaySFXEvent eventData)
+	{
+		if (audioClips.ContainsKey (eventData.assetName))
+		{
+			if (audioCoolDowns [eventData.assetName] == 0)
+			{
+				audioCoolDowns [eventData.assetName] = SFX_COOLDOWN;
+				sfxAudioSource.PlayOneShot (audioClips [eventData.assetName], sfxVolume);
+			}
+		}
+		else
+		{
+			AudioClip audioClip = Resources.Load (eventData.assetName) as AudioClip;
+			audioClips.Add (eventData.assetName, audioClip);
+			audioCoolDowns.Add (eventData.assetName, SFX_COOLDOWN);
+			sfxAudioSource.PlayOneShot (audioClip, sfxVolume);
+		}
+	}
+
+	private void OnPlaySpeech (PlaySpeechEvent eventData)
+	{
+		if (audioClips.ContainsKey (eventData.assetName))
+		{
+			speechAudiosource.PlayOneShot (audioClips [eventData.assetName], musicVolume);
+		}
+		else
+		{
+			AudioClip audioClip = Resources.Load (eventData.assetName) as AudioClip;
+			audioClips.Add (eventData.assetName, audioClip);
+			speechAudiosource.PlayOneShot (audioClip, speechVolume);
+		}
+	}
+
+	private void OnPlayMusic (PlayMusicEvent eventData)
+	{
+		if (musicClips.ContainsKey (eventData.assetName))
+		{
+			musicAudioSource.clip = musicClips [eventData.assetName];
+			musicAudioSource.volume = musicVolume;
+			musicAudioSource.loop = true;
+			musicAudioSource.Play ();
+		}
+		else
+		{
+			AudioClip musicClip = Resources.Load (eventData.assetName) as AudioClip;
+			musicClips.Add (eventData.assetName, musicClip);
+			musicAudioSource.clip = musicClip;
+			musicAudioSource.volume = musicVolume;
+			musicAudioSource.loop = true;
+			musicAudioSource.Play ();
+		}
+	}
+
+	public void UnloadAudioClips ()
+	{
+		foreach (KeyValuePair<string, AudioClip> currentAudioClip in audioClips)
+		{
+			Resources.UnloadAsset (currentAudioClip.Value);
+		}
+		audioClips.Clear ();
+	}
+
+	public void UnloadMusic ()
+	{
+		foreach (KeyValuePair<string, AudioClip> currentMusicClip in musicClips)
+		{
+			Resources.UnloadAsset (currentMusicClip.Value);
+		}
+		musicClips.Clear ();
+	}
 }

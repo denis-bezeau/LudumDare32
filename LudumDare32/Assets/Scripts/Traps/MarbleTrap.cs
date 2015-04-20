@@ -6,36 +6,36 @@ public class MarbleTrap : Trap
 	public float speedModifier = 0.5f;
 	private HauntedMarbles hauntedMarbles = null;
 
-	public void Awake()
+	public void Awake ()
 	{
-		hauntedMarbles = GetComponent<HauntedMarbles>();
+		hauntedMarbles = GetComponent<HauntedMarbles> ();
 	}
 
-	void Update()
+	void Update ()
 	{
-		base.UpdateTrap();
+		base.UpdateTrap ();
 	}
 
-	public override void OnEnterTrap(PersonAI person)
+	public override void OnEnterTrap (PersonAI person)
 	{
-		person.GetComponent<PersonMotion>().m_speedModifier = speedModifier;
-
+		person.GetComponent<PersonMotion> ().m_speedModifier = speedModifier;
+		CTEventManager.FireEvent (new PlaySFXEvent () {assetName = "audio/sfx/trap_Marbles"});
 		hauntedMarbles.isActive = true;
 	}
 
-	public override void OnExitTrap(PersonAI person)
+	public override void OnExitTrap (PersonAI person)
 	{
-		person.GetComponent<PersonMotion>().m_speedModifier = 1.0f;
+		person.GetComponent<PersonMotion> ().m_speedModifier = 1.0f;
 		hauntedMarbles.isActive = false;
 	}
 
-	void OnTriggerEnter(Collider col)
+	void OnTriggerEnter (Collider col)
 	{
-		base.OnTriggerEnter(col);
+		base.OnTriggerEnter (col);
 	}
 	
-	void OnTriggerExit(Collider col)
+	void OnTriggerExit (Collider col)
 	{
-		base.OnTriggerExit(col);
+		base.OnTriggerExit (col);
 	}
 }

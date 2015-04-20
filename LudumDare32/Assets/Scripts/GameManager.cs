@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
 		CTEventManager.AddListener<BuyTrapEvent> (OnBuyTrapEvent);
 		CTEventManager.AddListener<PlaceTrapEvent> (OnPlaceTrapEvent);
 
-		PlayerPrefs.SetFloat ("sfxVolume", 1.0f);
+		PlayerPrefs.SetFloat ("sfxVolume", 0.5f);
 		PlayerPrefs.SetFloat ("musicVolume", 0.02f);
 		PlayerPrefs.SetFloat ("speechVolume", 0.85f);
 
@@ -132,9 +132,9 @@ public class GameManager : MonoBehaviour
 		StartCoroutine (ReLoadLevel ());
 
 		_totalEnemies = 0;
-		for(int i = 0; i < attackWaves.Length; i++)
+		for (int i = 0; i < attackWaves.Length; i++)
 		{
-			_totalEnemies+= attackWaves[i].count;
+			_totalEnemies += attackWaves [i].count;
 		}
 
 		ShowHud ();
@@ -206,7 +206,7 @@ public class GameManager : MonoBehaviour
 
 	public void Update ()
 	{
-		CheckGameCondition();
+		CheckGameCondition ();
 
 		UpdateAttackWaves ();
 
@@ -221,34 +221,34 @@ public class GameManager : MonoBehaviour
 		// Check inputs
 
 		if (Input.GetKeyDown (KeyCode.Escape))
-	    {
+		{
 
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha1))
+		else if (Input.GetKeyDown (KeyCode.Alpha1))
 		{
-			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Plant });
+			CTEventManager.FireEvent (new BuyTrapEvent () { type = Trap.TrapType.Plant });
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha2))
+		else if (Input.GetKeyDown (KeyCode.Alpha2))
 		{
-			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Marble });
+			CTEventManager.FireEvent (new BuyTrapEvent () { type = Trap.TrapType.Marble });
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha3))
+		else if (Input.GetKeyDown (KeyCode.Alpha3))
 		{
-			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Door });
+			CTEventManager.FireEvent (new BuyTrapEvent () { type = Trap.TrapType.Door });
 		}
 	}
 
-	void CheckGameCondition()
+	void CheckGameCondition ()
 	{
-		if(totalKills + currentEscapeeCount >= _totalEnemies)
+		if (totalKills + currentEscapeeCount >= _totalEnemies)
 		{
 			if (totalKills > currentEscapeeCount)
 			{
-				YouWin();
+				YouWin ();
 			}
 			else
 			{
-				YouLose();
+				YouLose ();
 			}
 		}
 	}
