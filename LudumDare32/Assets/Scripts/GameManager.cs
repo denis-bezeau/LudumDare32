@@ -163,6 +163,12 @@ public class GameManager : MonoBehaviour
 			yield return null;
 		}
 
+		GameObject spriteOrderTopNode = GameObject.FindGameObjectWithTag ("levelTopNode");
+		if (spriteOrderTopNode == null)
+		{
+			Debug.LogWarning ("Game level does not have an object with tag \"levelTopNode\". Sprites will not layer correctly.");
+		}
+
 		GameObject.Instantiate (_cameraManager, new Vector3 (0.0f, 0.0f, 0.0f), Quaternion.identity);
 
 		if (musicStarted == false)
