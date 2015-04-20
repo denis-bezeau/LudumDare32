@@ -36,31 +36,32 @@ public class GameTile : MonoBehaviour
 	}
 
 	// Mouse Events
+	// Mouse Enter Un-nessecary.
 	void OnMouseEnter()
 	{
-		if(_renderer != null)
-		{
-			if(_renderer.material != null)
-			{
-				if (GameManager.GetInstance().IsPlacingTrap())
-				{
-					_renderer.material.color = Color.red;
-
-					if (GameManager.GetInstance().IsTileValid(this))
-					{
-						if((parentRoom != null) && (parentRoom.CanHaveTraps))
-						{
-							_renderer.material.color = Color.green;
-						}
-						else if (parentRoom == null)
-						{
-							_renderer.material.color = Color.green;
-						}
-						
-					}
-				}
-			}
-		}
+//		if(_renderer != null)
+//		{
+//			if(_renderer.material != null)
+//			{
+//				if (GameManager.GetInstance().IsPlacingTrap())
+//				{
+//					_renderer.material.color = Color.red;
+//
+//					if (GameManager.GetInstance().IsTileValid(this))
+//					{
+//						if((parentRoom != null) && (parentRoom.CanHaveTraps))
+//						{
+//							_renderer.material.color = Color.green;
+//						}
+//						else if (parentRoom == null)
+//						{
+//							_renderer.material.color = Color.green;
+//						}
+//						
+//					}
+//				}
+//			}
+//		}
 	}
 
 	void OnMouseUp()
@@ -80,7 +81,29 @@ public class GameTile : MonoBehaviour
 
 	void OnMouseOver()
 	{
-
+		if(_renderer != null)
+		{
+			if(_renderer.material != null)
+			{
+				if (GameManager.GetInstance().IsPlacingTrap())
+				{
+					_renderer.material.color = Color.red;
+					
+					if (GameManager.GetInstance().IsTileValid(this))
+					{
+						if((parentRoom != null) && (parentRoom.CanHaveTraps))
+						{
+							_renderer.material.color = Color.green;
+						}
+						else if (parentRoom == null)
+						{
+							_renderer.material.color = Color.green;
+						}
+						
+					}
+				}
+			}
+		}
 	}
 
 	void OnMouseExit()
@@ -92,6 +115,11 @@ public class GameTile : MonoBehaviour
 				_renderer.material.color = Color.white;
 			}
 		}
+	}
+
+	public void SetTileSelected()
+	{
+
 	}
 
 	public void SetTexture(string texPath)

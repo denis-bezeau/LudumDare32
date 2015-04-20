@@ -46,6 +46,9 @@ public class GameManager : MonoBehaviour
 	private CameraManager
 		_cameraManager;
 
+	// Input blockers
+	private bool _keyboardInputRecieved = false;
+	
 	public static GameManager GetInstance ()
 	{
 		if (instance == null)
@@ -122,6 +125,7 @@ public class GameManager : MonoBehaviour
 
 	private void ResetGameSettings ()
 	{
+		_keyboardInputRecieved = false;
 
 		for (int i = 0; i < Enemies.Count; ++i)
 		{
@@ -132,6 +136,7 @@ public class GameManager : MonoBehaviour
 
 		StartCoroutine (ReLoadLevel ());
 
+		_totalEnemies = 0;
 		for(int i = 0; i < attackWaves.Length; i++)
 		{
 			_totalEnemies+= attackWaves[i].count;
@@ -217,6 +222,25 @@ public class GameManager : MonoBehaviour
 			energy = 100;
 		}
 		CTEventManager.FireEvent (new UpdateEnergyEvent () { energy = (int)this.energy });
+
+		// Check inputs
+
+		if (Input.GetKeyDown (KeyCode.Escape))
+	    {
+			_keyboardInputRecieved = false;
+		}
+		else if (Input.GetKeyDown(KeyCode.Alpha1) && !_keyboardInputRecieved)
+		{
+			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Plant });
+		}
+		else if (Input.GetKeyDown(KeyCode.Alpha2) && !_keyboardInputRecieved)
+		{
+			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Marble });
+		}
+		else if (Input.GetKeyDown(KeyCode.Alpha3) && !_keyboardInputRecieved)
+		{
+			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Door });
+		}
 	}
 
 	void CheckGameCondition()
@@ -321,6 +345,7 @@ public class GameManager : MonoBehaviour
 		{
 			currentSelectedTrap = eventData.type;
 			Debug.Log ("current selected trap = " + eventData.type);
+			_keyboardInputRecieved = true;
 		}
 		else
 		{
@@ -341,6 +366,7 @@ public class GameManager : MonoBehaviour
 				energy -= (float)cost;
 				InstantiateTrapAtLocation (currentSelectedTrap, eventData.gameTile);
 			}
+			_keyboardInputRecieved = false;
 		}
 		else
 		{

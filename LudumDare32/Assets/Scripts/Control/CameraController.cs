@@ -5,6 +5,8 @@ using System.Collections;
 public class CameraController : MonoBehaviour
 {
 	public float mouseSensitivity = 1.0f;
+	public float keySensitivity = 20.0f;
+
 	public float maxDeltaX = 10.0f;
 	public float maxDeltaY = 5.0f;
 
@@ -58,6 +60,26 @@ public class CameraController : MonoBehaviour
 			{
 				lastPosition.y = maxDeltaY  + Mathf.Sign (totalDeltaY - LevelCenter.y);
 			}
+		}
+
+		if(Input.GetKey (KeyCode.W))
+		{
+			transform.Translate(0.0f, keySensitivity * Time.deltaTime, 0.0f);
+		}
+
+		if(Input.GetKey (KeyCode.A))
+		{
+			transform.Translate(-keySensitivity * Time.deltaTime, 0.0f, 0.0f);
+		}
+
+		if(Input.GetKey(KeyCode.S))
+		{
+			transform.Translate(0.0f, -keySensitivity * Time.deltaTime, 0.0f);
+		}
+
+		if(Input.GetKey (KeyCode.D))
+		{
+			transform.Translate(keySensitivity * Time.deltaTime, 0.0f, 0.0f);
 		}
 	}
 }
