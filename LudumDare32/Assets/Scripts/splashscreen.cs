@@ -9,6 +9,7 @@ public class splashscreen : MonoBehaviour {
 		YouWin,
 		YouLose,
 		Title,
+		Instructions,
 		COUNT
 	}
 
@@ -23,6 +24,7 @@ public class splashscreen : MonoBehaviour {
 		scenenames[(int)Scene.YouLose] = "YouLose";
 		scenenames[(int)Scene.YouWin] = "YouWin";
 		scenenames[(int)Scene.Title] = "Title";
+		scenenames[(int)Scene.Instructions] = "Instructions";
 	}
 	
 	// Update is called once per frame
