@@ -28,6 +28,9 @@ public class GameManager : MonoBehaviour
 	private GameObject MarbleTrapPrefab;
 	private GameObject DoorTrapPrefab;
 
+	[SerializeField]
+	private GameObject MouseTrapDecalPrefab;
+
 
 	private int currentEscapeeCount;
 	private GameObject DefaultLevel;
@@ -38,7 +41,10 @@ public class GameManager : MonoBehaviour
 	private int[] trapCosts;
 	private float energy;
 	private Trap.TrapType currentSelectedTrap = Trap.TrapType.None;
-
+	public Trap.TrapType CurrentSelectedTrap
+	{
+		get { return currentSelectedTrap; }
+	}
 	private float _nextAttackWaveTime = 0.0f;
 	private int _attackWaveNumber = 1;
 
@@ -79,6 +85,8 @@ public class GameManager : MonoBehaviour
 	{
 		instance = this;
 		SetUpTrapData ();
+
+		GameObject.Instantiate(MouseTrapDecalPrefab, Vector3.zero, Quaternion.identity);
 
 		CTEventManager.AddListener<KillEnemyEvent> (OnKillEnemyEvent);
 		CTEventManager.AddListener<RestartGameEvent> (OnRestartGame);
@@ -222,7 +230,7 @@ public class GameManager : MonoBehaviour
 
 		if (Input.GetKeyDown (KeyCode.Escape))
 		{
-
+			currentSelectedTrap = Trap.TrapType.None;
 		}
 		else if (Input.GetKeyDown (KeyCode.Alpha1))
 		{
