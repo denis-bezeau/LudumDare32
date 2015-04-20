@@ -361,7 +361,7 @@ public class GameManager : MonoBehaviour
 					DoorTrapPrefab = Resources.Load ("Prefabs/traps/DoorTrap/DoorTrap") as GameObject;
 				}
 				GameObject newTrapGameObject = GameObject.Instantiate (DoorTrapPrefab, tile.transform.position, Quaternion.identity) as GameObject;
-				newTrapGameObject.transform.localScale = new Vector3 (0.2f, 0.2f, 0.2f);
+				newTrapGameObject.transform.localScale = new Vector3 (0.35f, 0.35f, 0.35f);
 				Trap newTrap = newTrapGameObject.GetComponent<Trap> ();
 				tile.currentTrap = newTrap;
 				if (tile.parentRoom != null)

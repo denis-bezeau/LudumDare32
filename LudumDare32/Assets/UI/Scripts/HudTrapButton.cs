@@ -12,7 +12,6 @@ public class HudTrapButton : MonoBehaviour
 
 	public void Start()
 	{
-		Debug.Log(name + "Start");
 		quantityLabel.text = GameManager.GetInstance().GetTrapCost(type).ToString();
 	}
 
