@@ -18,10 +18,6 @@ public class Door : MonoBehaviour
 	private Room
 		_room2;
 
-	// Entrance/exit doors
-	public bool isEntrance = false;
-	public bool isExit = false;
-
 	private BoxCollider _doorCollider;
 
 	// Closed door has health which enemies can deplete to open the door
@@ -52,11 +48,7 @@ public class Door : MonoBehaviour
 
 	public Room GetOtherRoom (Room thisRoom)
 	{
-		if ((thisRoom == null) && isEntrance)
-		{
-			return _room1;
-		}
-		else if (thisRoom == _room1)
+		if (thisRoom == _room1)
 		{
 			return _room2;
 		}

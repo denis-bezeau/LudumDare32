@@ -145,19 +145,7 @@ public class PersonAI : MonoBehaviour
 				// When we reach the door see if we need to bash down the door to walk through it
 				if(m_personMotion.HasReachedTarget())
 				{
-					// Is this the exit door?
-					if(m_targetDoor.isExit)
-					{
-						EscapeEvent escapeEvent = new EscapeEvent();
-						escapeEvent.enemy = this;
-						CTEventManager.FireEvent(escapeEvent);
-
-						StateChange(EAIState.k_none);
-					}
-					else
-					{
-						StateChange(EAIState.k_bashDownDoor);
-					}
+					StateChange(EAIState.k_bashDownDoor);
 				}
 			}
 			break;
@@ -173,8 +161,21 @@ public class PersonAI : MonoBehaviour
 						m_previousDoor = m_targetDoor;
 						m_targetDoor = null;
 						
-						// Choose the next door in the new room to walk to
-						StateChange(EAIState.k_chooseADoor);
+						// Have we reached the escape room?
+						if(m_currentRoom == m_escapeRoom)
+						{
+							// ESCAPE!
+							EscapeEvent escapeEvent = new EscapeEvent();
+							escapeEvent.enemy = this;
+							CTEventManager.FireEvent(escapeEvent);
+							
+							StateChange(EAIState.k_none);
+						}
+						else
+						{
+							// Choose the next door in the new room to walk to
+							StateChange(EAIState.k_chooseADoor);
+						}
 					}
 					else
 					{
