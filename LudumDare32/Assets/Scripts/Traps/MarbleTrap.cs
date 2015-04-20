@@ -10,6 +10,12 @@ public class MarbleTrap : Trap
 	{
 		hauntedMarbles = GetComponent<HauntedMarbles>();
 	}
+
+	void Update()
+	{
+		base.UpdateTrap();
+	}
+
 	public override void OnEnterTrap(PersonAI person)
 	{
 		person.GetComponent<PersonMotion>().m_speedModifier = speedModifier;

@@ -299,7 +299,7 @@ public class GameManager : MonoBehaviour
 
 		trapCosts = new int [(int)Trap.TrapType.COUNT];
 		trapCosts [(int)Trap.TrapType.None] = 0;
-		trapCosts [(int)Trap.TrapType.Door] = 10;
+		trapCosts [(int)Trap.TrapType.Door] = 40;
 		trapCosts [(int)Trap.TrapType.Plant] = 30;
 		trapCosts [(int)Trap.TrapType.Marble] = 20;
 	}

@@ -22,6 +22,9 @@ public class Trap : MonoBehaviour
 		get { return _cost; } 
 	}
 
+	private float _timeTicker;
+	public float TrapDuration = 3.0f;
+
 	private BoxCollider _trapCol;
 
 	/// <summary>
@@ -40,7 +43,7 @@ public class Trap : MonoBehaviour
 	public virtual void OnEnterTrap (PersonAI person)
 	{
 		
-	}
+	}		
 	
 	/// <summary>
 	/// What to do when a person exits a room
@@ -52,7 +55,17 @@ public class Trap : MonoBehaviour
 
 	void Awake()
 	{
+		_timeTicker = 0.0f;
 		_trapCol = this.gameObject.GetComponent<BoxCollider>();
+	}
+
+	public void UpdateTrap()
+	{
+		if(_timeTicker >= TrapDuration)
+		{
+			GameObject.Destroy(this.gameObject);
+		}
+		_timeTicker += Time.deltaTime;
 	}
 
 	public void OnTriggerEnter(Collider col)

@@ -23,4 +23,9 @@ public class DoorTrap : Trap
 	{
 		base.OnTriggerExit(col);
 	}
+
+	void Update()
+	{
+		base.UpdateTrap();
+	}
 }

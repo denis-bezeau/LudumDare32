@@ -20,7 +20,7 @@ public class HudGeister : MonoBehaviour {
 			geisterAnimator.SetInteger("Feeling", value);
 		}
 	}
-
+	 
 	[SerializeField]
 	private Animator geisterAnimator;
 
