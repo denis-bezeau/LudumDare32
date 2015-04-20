@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
 		}
 
 		ShowHud ();
-
+		CTEventManager.FireEvent (new InitGameEvent () {totalEnemies = _totalEnemies }); //events for everyone
 		currentEscapeeCount = 0;
 	}
 
