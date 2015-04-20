@@ -45,9 +45,6 @@ public class GameManager : MonoBehaviour
 	[SerializeField]
 	private CameraManager
 		_cameraManager;
-
-	// Input blockers
-	private bool _keyboardInputRecieved = false;
 	
 	public static GameManager GetInstance ()
 	{
@@ -125,8 +122,6 @@ public class GameManager : MonoBehaviour
 
 	private void ResetGameSettings ()
 	{
-		_keyboardInputRecieved = false;
-
 		for (int i = 0; i < Enemies.Count; ++i)
 		{
 			GameObject.Destroy (Enemies [i].gameObject);
@@ -227,17 +222,17 @@ public class GameManager : MonoBehaviour
 
 		if (Input.GetKeyDown (KeyCode.Escape))
 	    {
-			_keyboardInputRecieved = false;
+
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha1) && !_keyboardInputRecieved)
+		else if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
 			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Plant });
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha2) && !_keyboardInputRecieved)
+		else if (Input.GetKeyDown(KeyCode.Alpha2))
 		{
 			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Marble });
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha3) && !_keyboardInputRecieved)
+		else if (Input.GetKeyDown(KeyCode.Alpha3))
 		{
 			CTEventManager.FireEvent(new BuyTrapEvent() { type = Trap.TrapType.Door });
 		}
@@ -345,7 +340,6 @@ public class GameManager : MonoBehaviour
 		{
 			currentSelectedTrap = eventData.type;
 			Debug.Log ("current selected trap = " + eventData.type);
-			_keyboardInputRecieved = true;
 		}
 		else
 		{
@@ -366,7 +360,6 @@ public class GameManager : MonoBehaviour
 				energy -= (float)cost;
 				InstantiateTrapAtLocation (currentSelectedTrap, eventData.gameTile);
 			}
-			_keyboardInputRecieved = false;
 		}
 		else
 		{
