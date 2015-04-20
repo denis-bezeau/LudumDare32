@@ -24,4 +24,18 @@ public class HudGeister : MonoBehaviour {
 	[SerializeField]
 	private Animator geisterAnimator;
 
+	public void Awake()
+	{
+		CTEventManager.AddListener<UpdateEnergyEvent>(OnUpdateEnergy);
+	}
+	public void OnDestroy()
+	{
+		CTEventManager.RemoveListener<UpdateEnergyEvent>(OnUpdateEnergy);
+	}
+
+	public void OnUpdateEnergy(UpdateEnergyEvent eventData)
+	{
+		Feeling = eventData.energy;
+	}
+
 }

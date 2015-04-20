@@ -16,10 +16,9 @@ public class GameManager : MonoBehaviour
 	private static GameManager instance;
 
 	//exposed variables for the user to change
-	public int MaximumEscapeeCount = 10;
-	public int TotalEnemies;
+	private int _totalEnemies = 0;
 	private int totalKills = 0;
-	public float energyRegenSpeed = 10.0f;
+	public float energyRegenSpeed = 2.0f;
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
 	public Animator Hud;
@@ -107,25 +106,13 @@ public class GameManager : MonoBehaviour
 	{
 		Enemies.Remove (eventData.enemy);
 		totalKills += eventData.count;
-		if (totalKills >= TotalEnemies)
-		{
-			YouWin ();
-		}
-
 		CTEventManager.FireEvent (new PlaySFXEvent () {assetName = "fbm_Death"}); //events for everyone
-		Debug.Log ("DEATH!!!");
-
 	}
 
 	public void OnEscapeEvent (EscapeEvent eventData)
 	{
 		currentEscapeeCount++;
 		Enemies.Remove (eventData.enemy);
-
-		if (currentEscapeeCount >= MaximumEscapeeCount)
-		{
-			YouLose ();
-		}
 	}
 
 	public void OnRestartGame (RestartGameEvent eventData)
@@ -135,7 +122,6 @@ public class GameManager : MonoBehaviour
 
 	private void ResetGameSettings ()
 	{
-		
 
 		for (int i = 0; i < Enemies.Count; ++i)
 		{
@@ -145,6 +131,11 @@ public class GameManager : MonoBehaviour
 		Enemies.Clear ();
 
 		StartCoroutine (ReLoadLevel ());
+
+		for(int i = 0; i < attackWaves.Length; i++)
+		{
+			_totalEnemies+= attackWaves[i].count;
+		}
 
 		ShowHud ();
 
@@ -215,6 +206,8 @@ public class GameManager : MonoBehaviour
 
 	public void Update ()
 	{
+		CheckGameCondition();
+
 		UpdateAttackWaves ();
 
 		energy += energyRegenSpeed * Time.deltaTime;
@@ -224,8 +217,21 @@ public class GameManager : MonoBehaviour
 			energy = 100;
 		}
 		CTEventManager.FireEvent (new UpdateEnergyEvent () { energy = (int)this.energy });
+	}
 
-
+	void CheckGameCondition()
+	{
+		if(totalKills + currentEscapeeCount >= _totalEnemies)
+		{
+			if (totalKills > currentEscapeeCount)
+			{
+				YouWin();
+			}
+			else
+			{
+				YouLose();
+			}
+		}
 	}
 
 	/// @brief	Manage attack waves
