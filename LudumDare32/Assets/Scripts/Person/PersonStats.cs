@@ -35,7 +35,7 @@ public class PersonStats : MonoBehaviour
 
 		deathSounds_fatbat.Add ("audio/sfx/enemy_fbm_Death");
 
-		hitSounds_fatbat.Add ("audio/sfx/enemy_fbm_GetHit");
+		deathSounds_fatbat.Add ("audio/sfx/enemy_fbm_GetHit");
 
 		spawnSounds_fatbat.Add ("audio/sfx/enemy_fbm_ImFatBatman");
 		spawnSounds_fatbat.Add ("audio/sfx/enemy_fbm_ImGettingOutOfHere");
@@ -44,7 +44,7 @@ public class PersonStats : MonoBehaviour
 		deathSounds_redShirt.Add ("audio/sfx/enemy_rds_Death");
 		deathSounds_redShirt.Add ("audio/sfx/enemy_rds_GetHit_Plant");
 
-		hitSounds_redShirt.Add ("audio/sfx/enemy_rds_GetHit");
+		deathSounds_redShirt.Add ("audio/sfx/enemy_rds_GetHit");
 
 		spawnSounds_redShirt.Add ("audio/sfx/enemy_rds_Random_StopLookingAtMe");
 	}
