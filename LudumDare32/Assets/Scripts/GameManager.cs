@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
 
 		if (musicStarted == false)
 		{
-			CTEventManager.FireEvent (new PlayMusicEvent () { assetName = "audio/music/loops_horror_short" });
+			CTEventManager.FireEvent (new PlayMusicEvent () { assetName = "audio/music/bgMusic_fadeIn" });
 			musicStarted = true;
 		}
 
