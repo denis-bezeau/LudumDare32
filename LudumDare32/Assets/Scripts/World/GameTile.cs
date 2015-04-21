@@ -47,6 +47,14 @@ public class GameTile : MonoBehaviour
 			{
 				CTEventManager.FireEvent(new PlaceTrapEvent() { gameTile = this });
 			}
+			else
+			{
+				CTEventManager.FireEvent (new PlaySFXEvent () {assetName = "audio/sfx/negatory"}); //events for everyone
+			}
+		}
+		else
+		{
+			CTEventManager.FireEvent (new PlaySFXEvent () {assetName = "audio/sfx/negatory"}); //events for everyone
 		}
 	}
 	

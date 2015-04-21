@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 		CTEventManager.AddListener<PlaceTrapEvent> (OnPlaceTrapEvent);
 
 		PlayerPrefs.SetFloat ("sfxVolume", 0.5f);
-		PlayerPrefs.SetFloat ("musicVolume", 0.02f);
+		PlayerPrefs.SetFloat ("musicVolume", 0.8f);
 		PlayerPrefs.SetFloat ("speechVolume", 0.85f);
 
 		SoundManager.GetInstance ();
@@ -367,11 +367,13 @@ public class GameManager : MonoBehaviour
 				Debug.Log ("OnPlaceTrapEvent cost =" + cost + " , energy=" + energy);
 				energy -= (float)cost;
 				InstantiateTrapAtLocation (currentSelectedTrap, eventData.gameTile);
+				CTEventManager.FireEvent (new PlaySFXEvent () {assetName = "audio/sfx/Goat1"}); //events for everyone
 			}
 		}
 		else
 		{
 			currentSelectedTrap = Trap.TrapType.None;
+			CTEventManager.FireEvent (new PlaySFXEvent () {assetName = "audio/sfx/negatory"}); //events for everyone
 		}
 	}
 	
