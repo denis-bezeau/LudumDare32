@@ -203,8 +203,12 @@ public class PersonAI : MonoBehaviour
 				// If we're obstructed because we've been physically pushed out of the room then retarget a door from a room we are physically in
 				if (m_personMotion.IsObstructed () && !m_physicalRooms.Contains (m_currentRoom))
 				{
-					m_currentRoom = m_physicalRooms [0];
-					StateChange (EAIState.k_chooseADoor);
+					if(m_physicalRooms != null && m_physicalRooms.Count >= 0)
+					{
+							m_currentRoom = m_physicalRooms [0];
+							StateChange (EAIState.k_chooseADoor);
+					}
+					StateChange (EAIState.k_chooseADoor);	
 				}
 				else
 				// If we're stuck in a wall then kill us

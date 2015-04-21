@@ -257,9 +257,9 @@ public class GameManager : MonoBehaviour
 
 		gametime+= Time.deltaTime;
 
-		if(gametime > gametime)
+		if(gametime >= GAMEENDTIME)
 		{
-			if (totalKills >= currentEscapeeCount)
+			if (totalKills > currentEscapeeCount)
 			{
 				YouWin();
 			}
