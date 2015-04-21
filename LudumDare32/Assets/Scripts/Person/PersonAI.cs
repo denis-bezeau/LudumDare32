@@ -33,7 +33,9 @@ public class PersonAI : MonoBehaviour
 		k_none			= 0,
 		k_chooseADoor,
 		k_walkToDoor,
+		k_walkToCenter,
 		k_bashDownDoor,
+		k_escaped,
 		k_dead
 	}
 
@@ -132,6 +134,13 @@ public class PersonAI : MonoBehaviour
 	{
 		if (!m_physicalRooms.Contains (newRoom))
 			m_physicalRooms.Add (newRoom);
+
+		m_currentRoom = newRoom;
+
+		if (m_currentRoom is EscapeRoom)
+		{
+			StateChange (EAIState.k_escaped);
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -167,7 +176,20 @@ public class PersonAI : MonoBehaviour
 				LookForADoor ();
 			}
 			break;
-			
+		case EAIState.k_walkToCenter:
+			{
+				if (m_personMotion.HasReachedTarget ())
+				{
+					Debug.Log ("Has reached target");
+					StateChange (EAIState.k_chooseADoor);
+				}
+				else if (m_personMotion.IsObstructed () && !m_physicalRooms.Contains (m_currentRoom))
+				{
+					m_currentRoom = m_physicalRooms [0];
+					StateChange (EAIState.k_walkToCenter);
+				}
+				break;
+			}
 		case EAIState.k_walkToDoor:
 			{
 				// If we're not walking to the best door and our door is closed then switch to the best door?
@@ -212,12 +234,12 @@ public class PersonAI : MonoBehaviour
 							escapeEvent.enemy = this;
 							CTEventManager.FireEvent (escapeEvent);
 							
-							StateChange (EAIState.k_none);
+							StateChange (EAIState.k_escaped);
 						}
 						else
 						{
-							// Choose the next door in the new room to walk to
-							StateChange (EAIState.k_chooseADoor);
+							// Walk into room
+							StateChange (EAIState.k_walkToCenter);
 						}
 					}
 					else
@@ -250,6 +272,12 @@ public class PersonAI : MonoBehaviour
 		}
 	}
 
+	public void ChooseNewTarget ()
+	{
+		// try ROOM again
+		m_personMotion.WalkToTarget (m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	/// @brief	Change AI FSM state.
 	//////////////////////////////////////////////////////////////////////////
@@ -261,7 +289,12 @@ public class PersonAI : MonoBehaviour
 			{
 			}
 			break;
-			
+		case EAIState.k_walkToCenter:
+			{
+				Debug.Log (this.name + "Walking to center: " + m_currentRoom.name + " " + m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
+				m_personMotion.WalkToTarget (m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
+				break;
+			}
 		case EAIState.k_walkToDoor:
 			{
 				m_personMotion.WalkToTarget (m_targetDoor.transform.position);
@@ -280,9 +313,28 @@ public class PersonAI : MonoBehaviour
 				m_personMotion.Die ();
 			}
 			break;
+		case EAIState.k_escaped:
+			{
+				StartCoroutine (FadeOut ());
+				m_collider.enabled = false;
+			}
+			break;
 		}
 		
 		m_aiState = newState;
+	}
+
+	private IEnumerator FadeOut ()
+	{
+		SpriteRenderer sprite = GetComponentInChildren<SpriteRenderer> ();
+
+		while (sprite.color.a > 0)
+		{
+			Color temp = sprite.color;
+			temp.a -= .1f;
+			sprite.color = temp; 
+			yield return null;
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////

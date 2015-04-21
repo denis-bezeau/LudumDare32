@@ -28,13 +28,13 @@ public class Room : MonoBehaviour
 	}
 
 	public List<Door> Doors { get { return _doors; } }
-	private BoxCollider _roomCollider = null;
+	public BoxCollider RoomCollider = null;
 
 	public void Awake ()
 	{
 		// Error checking first!
-		_roomCollider = GetComponent<BoxCollider> ();
-		if (_roomCollider == null)
+		RoomCollider = GetComponent<BoxCollider> ();
+		if (RoomCollider == null)
 		{
 			Debug.LogError ("Room doesn't have a collider!");
 		}
