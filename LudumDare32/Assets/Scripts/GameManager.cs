@@ -19,6 +19,10 @@ public class GameManager : MonoBehaviour
 	private int _totalEnemies = 0;
 	private int totalKills = 0;
 	public float energyRegenSpeed = 2.0f;
+
+	private float gametime = 0.0f;
+	private float GAMEENDTIME = 120.0f;
+
 	public GameObject[] EnemySpawnLocations;
 	public Room GoalRoom;
 	public Animator Hud;
@@ -130,6 +134,8 @@ public class GameManager : MonoBehaviour
 
 	private void ResetGameSettings ()
 	{
+		gametime = 0.0f;
+
 		for (int i = 0; i < Enemies.Count; ++i)
 		{
 			GameObject.Destroy (Enemies [i].gameObject);
@@ -248,9 +254,23 @@ public class GameManager : MonoBehaviour
 
 	void CheckGameCondition ()
 	{
+
+		gametime+= Time.deltaTime;
+
+		if(gametime > gametime)
+		{
+			if (totalKills >= currentEscapeeCount)
+			{
+				YouWin();
+			}
+			else
+			{
+				YouLose();
+			}
+		}
 		if (totalKills + currentEscapeeCount >= _totalEnemies)
 		{
-			if (totalKills > currentEscapeeCount)
+			if (totalKills >= currentEscapeeCount)
 			{
 				YouWin ();
 			}
