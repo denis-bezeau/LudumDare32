@@ -1,0 +1,161 @@
+#version 130
+
+uniform sampler2D normalMap;
+uniform sampler2D diffuseMap;
+uniform sampler2D depthMap;
+uniform sampler2D specularMap;
+uniform sampler2D emissiveMap;
+uniform sampler2D aoMap;
+uniform sampler2D anisotropyMap;
+uniform sampler2D indexMap;
+uniform sampler2D paletteMap;
+
+uniform vec3 lightPosition;
+uniform vec3 directLightColour;
+uniform vec3 ambientLightColour;
+uniform vec3 ambientLightColour2;
+uniform vec2 textureResolution;
+
+uniform float cellShadingLevel;
+
+uniform float lightWrap;
+
+uniform float amplifyDepth;
+
+uniform float shadows;
+
+uniform float ambientMapStrength;
+
+uniform float normalFlip;
+
+uniform float attenuationMultiplier;
+
+
+uniform mat2x2 rotationMatrix;
+
+void main()
+{
+
+	vec2 centredTexCoords = gl_TexCoord[0].xy;
+	centredTexCoords *= textureResolution.xy;
+	centredTexCoords = floor(centredTexCoords.xy) + vec2(0.5, 0.5);
+	centredTexCoords /= textureResolution.xy;
+
+	vec4 normalColour = texture2D(normalMap, gl_TexCoord[0].xy);
+	vec4 diffuseColour = texture2D(diffuseMap, gl_TexCoord[0].xy);
+	vec4 specularColour = texture2D(specularMap, gl_TexCoord[0].xy);
+	vec4 emissiveColour = texture2D(emissiveMap, gl_TexCoord[0].xy);
+	vec4 aoColour = texture2D(aoMap, gl_TexCoord[0].xy);
+	vec4 anisotropyColour = texture2D(anisotropyMap, gl_TexCoord[0].xy);
+	float indexValue = texture2D(indexMap, gl_TexCoord[0].xy).x;
+	
+	float depthColour = texture2D(depthMap, gl_TexCoord[0].xy).x;
+		
+		
+	if (diffuseColour.a <= 0.1)
+	{
+		discard;
+	}
+	
+	aoColour *= ambientMapStrength;
+	aoColour += 1.0 - ambientMapStrength;
+	
+	float sizeOfThing = 1.0;
+	
+	vec3 fragPos;
+	fragPos.xy = gl_TexCoord[0].xy;
+	
+	
+	fragPos.xy *= textureResolution.xy;
+	fragPos.xy = floor(fragPos.xy);
+	fragPos.xy /= textureResolution.xy;
+	
+	
+	fragPos.y = 1.0 - fragPos.y;
+	
+	fragPos = fragPos + vec3(-0.5, -0.5, 0);
+	fragPos *= sizeOfThing * 2.0;
+	fragPos.x *= (textureResolution.x / textureResolution.y);
+	
+	fragPos.z = depthColour * amplifyDepth;
+	
+	//fragPos.xy *= rotationMatrix;
+	
+	vec3 normal = (normalColour.rgb - 0.5) * 2.0;
+	normal.y *= normalFlip;
+	//normal.xy *= rotationMatrix;
+	
+	
+	
+	
+	
+	vec3 lightVec = lightPosition - fragPos;
+	
+	float lightDistance = length(lightVec) * attenuationMultiplier;
+	
+	float attenuation = 1.0 / (1.0 + 20.0 * lightDistance + 200.0 * lightDistance * lightDistance);
+	
+	normal = normalize(normal);
+	lightVec = normalize(lightVec);
+	float shadowMult = 1.0;
+	if (shadows > 0.5)
+	{
+		float thisHeight = fragPos.z;
+		vec3 tapPos = vec3(centredTexCoords, fragPos.z + 0.01);
+		vec3 moveVec = lightVec.xyz * vec3(1.0, -1.0, 1.0) * 0.006;
+		moveVec.xy *= rotationMatrix;
+		moveVec.x *= textureResolution.y / textureResolution.x;
+		for (int i = 0; i < 20; i++)
+		{
+			tapPos += moveVec;
+			float tapDepth = texture2D(depthMap, tapPos.xy).x * amplifyDepth;
+			if (tapDepth > tapPos.z)
+			{
+				shadowMult -= 0.125;
+			}
+		}
+	}
+	
+	shadowMult = clamp(shadowMult, 0.0, 1.0);
+	float rawDiffuse = clamp(dot(normal, lightVec) * 1000.0, 0.0, 1.0);
+		
+	float diffuseLevel = clamp(dot(normal, lightVec) + lightWrap, 0.0, lightWrap + 1.0) / (lightWrap + 1.0) * attenuation;
+	
+	
+	
+	
+	//Specular calculations
+	vec3 viewVec = vec3(0.0, 0.0, 1.0);	//Orthographic camera makes this nice and simple.
+	vec3 bounceVec = reflect(-lightVec, normal);
+	float glossiness = 5.0;
+	float specLevel = pow(clamp(dot(bounceVec, viewVec), 0.0, 1.0), glossiness) * rawDiffuse * 0.5 * attenuation * specularColour.r;
+	
+	
+	diffuseLevel *= shadowMult;
+	
+	float illumination = diffuseLevel + specLevel;
+	illumination /= 2.0;
+	
+	
+	/*
+	float upFactor = normal.y * 0.5 + 0.5;
+	upFactor *= cellShadingLevel;
+	upFactor = floor(upFactor);
+	upFactor /= cellShadingLevel - 0.5;
+	vec3 ambientResult = ambientLightColour * upFactor + ambientLightColour2 * (1.0 - upFactor);
+	*/
+	//diffuseLevel = 0.0;
+	
+	//float rimLighting = 1.0 - dot(normal, vec3(0.0, 0.0, 1.0));
+	
+	
+		
+	//gl_FragColor.rgb = (diffuseLevel * directLightColour + ambientResult * aoColour.rgb) * diffuseColour.rgb;
+	//gl_FragColor.rgb += vec3(specLevel, specLevel, specLevel) * specularColour.rgb * directLightColour * shadowMult + emissiveColour.rgb;
+	
+	gl_FragColor.rgb = texture2D(paletteMap, vec2(indexValue, 1.0 - illumination));
+	
+	gl_FragColor.a = diffuseColour.a;
+	
+		
+}

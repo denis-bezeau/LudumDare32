@@ -1,0 +1,41 @@
+#version 130
+
+uniform sampler2D normalMap;
+uniform sampler2D diffuseMap;
+uniform sampler2D depthMap;
+uniform sampler2D specularMap;
+uniform sampler2D emissiveMap;
+uniform sampler2D aoMap;
+uniform sampler2D anisotropyMap;
+
+uniform vec3 lightPosition;
+uniform vec3 directLightColour;
+uniform vec3 ambientLightColour;
+uniform vec3 ambientLightColour2;
+uniform vec2 textureResolution;
+
+uniform float cellShadingLevel;
+
+uniform float lightWrap;
+
+uniform float amplifyDepth;
+
+uniform float shadows;
+
+uniform float ambientMapStrength;
+
+uniform float normalFlip;
+
+uniform float attenuationMultiplier;
+
+
+uniform mat2x2 rotationMatrix;
+
+void main()
+{
+
+		
+	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	
+		
+}
