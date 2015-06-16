@@ -94,35 +94,37 @@ public class GridBuilder : EditorWindow
 		}
 		
 		roomObj.name = _roomName;
-		
+
+		Room roomComponent = null;
 		if (_roomType == GameEnums.RoomType.Normal)
 		{
-			roomObj.gameObject.AddComponent<Room> ();
+			roomComponent = roomObj.gameObject.AddComponent<Room> ();
 		}
 		else if (_roomType == GameEnums.RoomType.Escape)
 		{
-			roomObj.gameObject.AddComponent<EscapeRoom> ();
+			roomComponent = roomObj.gameObject.AddComponent<EscapeRoom> ();
 		}
 		else if (_roomType == GameEnums.RoomType.Spawn)
 		{
-			roomObj.gameObject.AddComponent<SpawnRoom> ();
+			roomComponent = roomObj.gameObject.AddComponent<SpawnRoom> ();
 		}
 
-		roomObj.GetComponent<Room>().GameTiles = new List<GameTile>();
+		roomComponent.GameTiles = new List<GameTile> ();
 		
 		roomObj.gameObject.layer = LayerMask.NameToLayer ("Ignore Raycast");
 		
 		// Build the Room Collider
-		BoxCollider col = roomObj.gameObject.AddComponent<BoxCollider> ();
-		col.isTrigger = true;
+		BoxCollider roomCollider = roomObj.gameObject.AddComponent<BoxCollider> ();
+		roomComponent.RoomCollider = roomCollider;
+		roomCollider.isTrigger = true;
 		
 		// Height is X, width is Y
-		col.size = new Vector3 (kTileHeight * _roomHeightTiles, kTileWidth * _roomWidthTiles, kZDepth);
+		roomCollider.size = new Vector3 (kTileHeight * _roomHeightTiles, kTileWidth * _roomWidthTiles, kZDepth);
 		
 		float colCenterX = ((kTileWidth * _roomWidthTiles) / 2.0f) - (kTileWidth / 2.0f);
 		float colCenterY = ((kTileHeight * _roomHeightTiles) / 2.0f) - (kTileHeight / 2.0f);
 		
-		col.center = new Vector3 (colCenterY, -1.0f * colCenterX, 0.0f);
+		roomCollider.center = new Vector3 (colCenterY, -1.0f * colCenterX, 0.0f);
 		
 		for (int i = 0; i < roomObj.transform.childCount; i++)
 		{
@@ -148,7 +150,7 @@ public class GridBuilder : EditorWindow
 				// First, Build the NW Tile
 				if ((i == 0 && j == 0))
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1f, 0.25f, 0.5f);
@@ -170,7 +172,7 @@ public class GridBuilder : EditorWindow
 				// Then, Build the NE Tile
 				else if (i == 0 && j == _roomHeightTiles - 1)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
@@ -193,7 +195,7 @@ public class GridBuilder : EditorWindow
 				// Then, build the SW Tile
 				else if (i == _roomWidthTiles - 1 && j == 0)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
@@ -215,7 +217,7 @@ public class GridBuilder : EditorWindow
 				// Then, build the SE Tile
 				else if (i == _roomWidthTiles - 1 && j == _roomHeightTiles - 1)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
@@ -237,7 +239,7 @@ public class GridBuilder : EditorWindow
 				// Then, left wall colliders
 				else if (j == 0)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (0.25f, 1.0f, 0.5f);
@@ -255,7 +257,7 @@ public class GridBuilder : EditorWindow
 				// Then, bottom wall colliders
 				else if (i == _roomWidthTiles - 1)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
@@ -273,7 +275,7 @@ public class GridBuilder : EditorWindow
 				// Then, top wall colliders
 				else if (i == 0)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (1.0f, 0.25f, 0.5f);
@@ -291,7 +293,7 @@ public class GridBuilder : EditorWindow
 				// finally, right wall colliders
 				else if (j == _roomHeightTiles - 1)
 				{
-					GameObject wall1 = new GameObject();
+					GameObject wall1 = new GameObject ();
 
 					BoxCollider col1 = wall1.AddComponent<BoxCollider> ();
 					col1.size = new Vector3 (0.25f, 1.0f, 0.5f);
@@ -311,7 +313,7 @@ public class GridBuilder : EditorWindow
 					gameTile.SetTexture (rootTexPath + _tileTextureStrings [(int)GameEnums.TileType.Floor]);
 					gameTile.IsWallTile = false;
 				}
-				roomObj.GetComponent<Room>().GameTiles.Add (gameTile);
+				roomObj.GetComponent<Room> ().GameTiles.Add (gameTile);
 				tileCount++;
 			}
 		}

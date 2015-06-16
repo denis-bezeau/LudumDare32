@@ -171,100 +171,100 @@ public class PersonAI : MonoBehaviour
 	{
 		switch (m_aiState)
 		{
-		case EAIState.k_chooseADoor:
-			{
-				LookForADoor ();
-			}
-			break;
-		case EAIState.k_walkToCenter:
-			{
-				if (m_personMotion.HasReachedTarget ())
+			case EAIState.k_chooseADoor:
 				{
-					Debug.Log ("Has reached target");
-					StateChange (EAIState.k_chooseADoor);
-				}
-				else if (m_personMotion.IsObstructed () && !m_physicalRooms.Contains (m_currentRoom))
-				{
-					m_currentRoom = m_physicalRooms [0];
-					StateChange (EAIState.k_walkToCenter);
+					LookForADoor ();
 				}
 				break;
-			}
-		case EAIState.k_walkToDoor:
-			{
-				// If we're not walking to the best door and our door is closed then switch to the best door?
-
-				// When we reach the door see if we need to bash down the door to walk through it
-				if (m_personMotion.HasReachedTarget ())
+			case EAIState.k_walkToCenter:
 				{
-					StateChange (EAIState.k_bashDownDoor);
+					if (m_personMotion.HasReachedTarget ())
+					{
+						Debug.Log ("Has reached target");
+						StateChange (EAIState.k_chooseADoor);
+					}
+					else if (m_personMotion.IsObstructed () && !m_physicalRooms.Contains (m_currentRoom))
+					{
+						m_currentRoom = m_physicalRooms [0];
+						StateChange (EAIState.k_walkToCenter);
+					}
+					break;
 				}
-				else
+			case EAIState.k_walkToDoor:
+				{
+					// If we're not walking to the best door and our door is closed then switch to the best door?
+
+					// When we reach the door see if we need to bash down the door to walk through it
+					if (m_personMotion.HasReachedTarget ())
+					{
+						StateChange (EAIState.k_bashDownDoor);
+					}
+					else
 				// If we're obstructed because we've been physically pushed out of the room then retarget a door from a room we are physically in
 				if (m_personMotion.IsObstructed () && !m_physicalRooms.Contains (m_currentRoom))
-				{
-					if(m_physicalRooms != null && m_physicalRooms.Count >= 0)
 					{
+						if (m_physicalRooms != null && m_physicalRooms.Count > 0)
+						{
 							m_currentRoom = m_physicalRooms [0];
 							StateChange (EAIState.k_chooseADoor);
+						}
+						StateChange (EAIState.k_chooseADoor);	
 					}
-					StateChange (EAIState.k_chooseADoor);	
-				}
-				else
+					else
 				// If we're stuck in a wall then kill us
 				if (m_personMotion.IsStuck ())
-				{
-					Kill ();
-				}
-			}
-			break;
-			
-		case EAIState.k_bashDownDoor:
-			{
-				if (Time.time >= m_nextDoorBashTime)
-				{
-					if (m_targetDoor.IsOpen)
 					{
-						// Walk through door to other room
-						m_currentRoom = m_targetDoor.GetOtherRoom (m_currentRoom);
-						m_previousDoor = m_targetDoor;
-						m_targetDoor = null;
-						
-						// Have we reached the escape room?
-						if (m_currentRoom == m_escapeRoom)
+						Kill ();
+					}
+				}
+				break;
+			
+			case EAIState.k_bashDownDoor:
+				{
+					if (Time.time >= m_nextDoorBashTime)
+					{
+						if (m_targetDoor.IsOpen)
 						{
-							// ESCAPE!
-							EscapeEvent escapeEvent = new EscapeEvent ();
-							escapeEvent.enemy = this;
-							CTEventManager.FireEvent (escapeEvent);
+							// Walk through door to other room
+							m_currentRoom = m_targetDoor.GetOtherRoom (m_currentRoom);
+							m_previousDoor = m_targetDoor;
+							m_targetDoor = null;
+						
+							// Have we reached the escape room?
+							if (m_currentRoom == m_escapeRoom)
+							{
+								// ESCAPE!
+								EscapeEvent escapeEvent = new EscapeEvent ();
+								escapeEvent.enemy = this;
+								CTEventManager.FireEvent (escapeEvent);
 							
-							StateChange (EAIState.k_escaped);
+								StateChange (EAIState.k_escaped);
+							}
+							else
+							{
+								// Walk into room
+								StateChange (EAIState.k_walkToCenter);
+							}
 						}
 						else
 						{
-							// Walk into room
-							StateChange (EAIState.k_walkToCenter);
+							// Do some damage to the door
+							m_targetDoor.Hit ();
+							m_nextDoorBashTime = Time.time + (m_personality == EPersonality.k_aggressive ? k_bashIntervalAggressive : k_bashIntervalNormal);
 						}
 					}
-					else
-					{
-						// Do some damage to the door
-						m_targetDoor.Hit ();
-						m_nextDoorBashTime = Time.time + (m_personality == EPersonality.k_aggressive ? k_bashIntervalAggressive : k_bashIntervalNormal);
-					}
 				}
-			}
-			break;
+				break;
 			
-		case EAIState.k_dead:
-			{
-				if (m_animator != null)
+			case EAIState.k_dead:
 				{
-					m_animator.SetBool ("death", true);
+					if (m_animator != null)
+					{
+						m_animator.SetBool ("death", true);
+					}
+					this.GetComponent<SphereCollider> ().enabled = false;
 				}
-				this.GetComponent<SphereCollider> ().enabled = false;
-			}
-			break;
+				break;
 		}
 	}
 
@@ -289,40 +289,40 @@ public class PersonAI : MonoBehaviour
 	{
 		switch (newState)
 		{
-		case EAIState.k_chooseADoor:
-			{
-			}
-			break;
-		case EAIState.k_walkToCenter:
-			{
-				Debug.Log (this.name + "Walking to center: " + m_currentRoom.name + " " + m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
-				m_personMotion.WalkToTarget (m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
+			case EAIState.k_chooseADoor:
+				{
+				}
 				break;
-			}
-		case EAIState.k_walkToDoor:
-			{
-				m_personMotion.WalkToTarget (m_targetDoor.transform.position);
-			}
-			break;
+			case EAIState.k_walkToCenter:
+				{
+					Debug.Log (this.name + "Walking to center: " + m_currentRoom.name + " " + m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
+					m_personMotion.WalkToTarget (m_currentRoom.transform.position + m_currentRoom.RoomCollider.center);
+					break;
+				}
+			case EAIState.k_walkToDoor:
+				{
+					m_personMotion.WalkToTarget (m_targetDoor.transform.position);
+				}
+				break;
 			
-		case EAIState.k_bashDownDoor:
-			{
-				m_nextDoorBashTime = 0.0f;
-			}
-			break;
+			case EAIState.k_bashDownDoor:
+				{
+					m_nextDoorBashTime = 0.0f;
+				}
+				break;
 			
-		case EAIState.k_dead:
-			{
+			case EAIState.k_dead:
+				{
 				
-				m_personMotion.Die ();
-			}
-			break;
-		case EAIState.k_escaped:
-			{
-				StartCoroutine (FadeOut ());
-				m_collider.enabled = false;
-			}
-			break;
+					m_personMotion.Die ();
+				}
+				break;
+			case EAIState.k_escaped:
+				{
+					StartCoroutine (FadeOut ());
+					m_collider.enabled = false;
+				}
+				break;
 		}
 		
 		m_aiState = newState;

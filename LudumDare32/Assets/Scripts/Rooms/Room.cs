@@ -12,8 +12,7 @@ public class Room : MonoBehaviour
 	protected List<Door>
 		_doors;
 
-	[SerializeField]
-	protected List<GameTile>
+	private List<GameTile>
 		_tiles;
 	public List<GameTile> GameTiles {
 		get { return _tiles; }
@@ -22,9 +21,15 @@ public class Room : MonoBehaviour
 
 	protected List<Trap> _traps = new List<Trap> ();
 
+	// OLD
 	protected List<PersonAI> _people = new List<PersonAI> ();
 	public List<PersonAI> PeopleInRoom {
 		get { return _people;}
+	}
+
+	protected List<MentalStateControl> _persons = new List<MentalStateControl> ();
+	public List<MentalStateControl> PersonsInRoom {
+		get { return _persons;}
 	}
 
 	public List<Door> Doors { get { return _doors; } }
@@ -49,6 +54,48 @@ public class Room : MonoBehaviour
 		}
 
 		RemoveBadTiles ();
+	}
+
+	void OnDrawGizmos ()
+	{
+		Gizmos.color = Color.yellow;
+
+		if (UnityEditor.Selection.activeObject == this.gameObject)
+		{
+			Gizmos.color = Color.blue;
+		}
+		else
+		{
+			Gizmos.color = Color.green;
+		}
+	
+		foreach (Door d in _doors)
+		{
+			Gizmos.DrawLine (GetRoomCenter (), d.transform.position);
+		}
+
+		Gizmos.DrawCube (GetRoomCenter (), new Vector3 (0.5f, 0.5f, 0.5f));
+	}
+
+	private void OnDrawGizmosSelected ()
+	{
+		foreach (Room r in GetConnectedRooms())
+		{
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawLine (GetRoomCenter (), r.GetRoomCenter ());
+		}
+	}
+	
+	public Vector3 GetRoomCenter ()
+	{
+		if (RoomCollider != null)
+		{
+			return this.transform.position + RoomCollider.center;
+		}
+
+		Debug.LogError ("Room doesn't have RoomCollider assigned");
+
+		return Vector3.zero;
 	}
 
 	public int RemoveBadDoors ()
@@ -76,6 +123,11 @@ public class Room : MonoBehaviour
 
 	public int RemoveBadTiles ()
 	{
+		if (_tiles == null)
+		{
+			// TODO: Do we ever have a list of tiles? Do we need one?
+			return 0;
+		}
 		List<GameTile> badTiles = new List<GameTile> ();
 		foreach (GameTile d in _tiles)
 		{
@@ -99,25 +151,55 @@ public class Room : MonoBehaviour
 
 	public void OnTriggerEnter (Collider col)
 	{
-		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
-		if (person != null)
+		// TODO: Original version of AI, remove when new one is reliable
+		PersonAI personAI = col.gameObject.GetComponent<PersonAI> ();
+		if (personAI != null)
 		{
-			_people.Add (person);
+			_people.Add (personAI);
 
 			// Notify PersonAI they're touching this room
-			person.EnterRoomPhysically (this);
+			personAI.EnterRoomPhysically (this);
 		}
+
+		MentalStateControl person = col.gameObject.GetComponent<MentalStateControl> ();
+		if (person != null)
+		{
+			_persons.Add (person);
+
+			person.EnterRoom (this);
+		}
+	}
+
+	public bool IsPersonInRoom (MentalStateControl personToFind)
+	{
+		foreach (MentalStateControl p in _persons)
+		{
+			if (p == personToFind)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void OnTriggerExit (Collider col)
 	{
-		PersonAI person = col.gameObject.GetComponent<PersonAI> ();
-		if (person != null)
+		// TODO: Original version of AI, remove when new one is reliable
+		PersonAI personAI = col.gameObject.GetComponent<PersonAI> ();
+		if (personAI != null)
 		{
-			_people.Remove (person);
+			_people.Remove (personAI);
 
 			// Notify PersonAI they're no longer touching this room
-			person.LeaveRoomPhysically (this);
+			personAI.LeaveRoomPhysically (this);
+		}
+
+		MentalStateControl person = col.gameObject.GetComponent<MentalStateControl> ();
+		if (person != null)
+		{
+			_persons.Remove (person);
+			
+			person.ExitRoom (this);
 		}
 	}
 
@@ -258,6 +340,11 @@ public class Room : MonoBehaviour
 	public bool RemoveTileFromRoom (GameTile tile)
 	{
 		return _tiles.Remove (tile);
+	}
+
+	public bool IsConnectedToRoom (Room otherRoom)
+	{
+		return GetConnectedRooms ().Contains (otherRoom);
 	}
 
 }
