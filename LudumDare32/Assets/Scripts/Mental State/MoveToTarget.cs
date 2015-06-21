@@ -24,14 +24,14 @@ namespace MentalStates
 
 			if (_memory.TargetObject == null && _memory.TargetPosition == null)
 			{
-				Debug.LogWarning("Trying to move without a target!");
+				_parentControl.LogWarning("Trying to move without a target!");
 				_parentControl.ChangeMentalState<Idle>();
 				return;
 			}
 
 			if (_memory.TargetPosition == null && _memory.TargetObject != null)
 			{
-				Debug.LogWarning("No target position, but we have target object. This is incorrect, we'll try again.");
+				_parentControl.LogWarning("No target position, but we have target object. This is incorrect, we'll try again.");
 				_parentControl.SetNewTarget(_memory.TargetObject);
 			}
 		}

@@ -21,7 +21,7 @@ namespace MentalStates
 
 			if (_targetObject == null)
 			{
-				Debug.LogWarning("No interactiveObject found on " + _memory.TargetObject.name);
+				_parentControl.LogWarning("No interactiveObject found on " + _memory.TargetObject.name);
 				_parentControl.ChangeMentalState<Idle>();
 				return;
 			}
@@ -30,7 +30,7 @@ namespace MentalStates
 
 			if (_currentInteraction == null)
 			{
-				Debug.LogWarning("No interaction found on " + _targetObject.name);
+				_parentControl.LogWarning("No interaction found on " + _targetObject.name);
 				_parentControl.ChangeMentalState<Idle>();
 				return;
 			}
@@ -38,7 +38,7 @@ namespace MentalStates
 			// We have success, set it as being used
 			_targetObject.BeginInteracting();
 
-			Debug.Log("Chose to " + _currentInteraction.ToString() + " on " + _targetObject.name);
+			_parentControl.LogMessage("Chose to " + _currentInteraction.ToString() + " on " + _targetObject.name);
 		}
 		
 		public override void UpdateState ()

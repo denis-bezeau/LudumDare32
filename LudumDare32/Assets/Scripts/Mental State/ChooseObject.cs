@@ -18,7 +18,7 @@ namespace MentalStates
 			// If we aren't in a room revert to an idle and hopefully we'll have one next time
 			if (_memory.CurrentRoom == null)
 			{
-				Debug.LogWarning(_parentControl.name + " doesn't have a current room.");
+				_parentControl.LogWarning(_parentControl.name + " doesn't have a current room.");
 				_parentControl.ChangeMentalState<Idle>();
 				return;
 			}
@@ -58,7 +58,7 @@ namespace MentalStates
 				chosenObject = availableObjects[objIdx];
 			}
 			
-			Debug.Log("Chosen Object: " + chosenObject + " (" + availableObjects.Count + " available)");
+			_parentControl.LogMessage("Chosen Object: " + chosenObject + " (" + availableObjects.Count + " available)");
 			return chosenObject;
 		}
 	}

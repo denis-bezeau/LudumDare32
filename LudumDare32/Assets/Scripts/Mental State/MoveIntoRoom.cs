@@ -19,7 +19,7 @@ namespace MentalStates
 
 			if (_memory.CurrentRoom == null)
 			{
-				Debug.LogWarning("Why aren't we in a room");
+				_parentControl.LogWarning("Why aren't we in a room");
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace MentalStates
 			}
 			chosenPoint = roomToChooseFrom.GetRoomCenter();
 
-			Debug.Log("MoveIntoRoom Chose point in " + roomToChooseFrom.name + " " + chosenPoint);
+			_parentControl.LogMessage("MoveIntoRoom Chose point in " + roomToChooseFrom.name + " " + chosenPoint);
 			return chosenPoint;
 		}
 	}

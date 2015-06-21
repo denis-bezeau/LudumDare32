@@ -97,7 +97,7 @@ public class MentalStateControl : MonoBehaviour
 		}
 
 		// TODO: We need to restrict these or print them another way
-		Debug.Log("Changing state from " + _activeMemory.PreviousState + " to " + _activeMemory.CurrentState);
+		LogMessage("Changing state from " + _activeMemory.PreviousState + " to " + _activeMemory.CurrentState);
 
 		_activeMemory.CurrentState.Begin();
 	}
@@ -110,7 +110,7 @@ public class MentalStateControl : MonoBehaviour
 	{
 		if (newRoom == _activeMemory.CurrentRoom)
 		{
-			Debug.LogWarning(this.name + " is entering the room they are already in?");
+			LogWarning(this.name + " is entering the room they are already in?");
 		}
 
 		if (_activeMemory.CurrentRoom != null && !_activeMemory.CurrentRoom.IsConnectedToRoom(newRoom))
@@ -118,7 +118,7 @@ public class MentalStateControl : MonoBehaviour
 			Debug.LogError(this.name + " is moving between rooms that aren't connected! " + _activeMemory.CurrentRoom + " and " + newRoom);
 		}
 
-		Debug.Log(this.name + " is entering " + newRoom);
+		LogMessage(this.name + " is entering " + newRoom);
 		_activeMemory.CurrentRoom = newRoom;
 	}
 
@@ -143,7 +143,7 @@ public class MentalStateControl : MonoBehaviour
 		Room nextRoom = newDoor.GetOtherRoom(_activeMemory.CurrentRoom);
 
 		if (nextRoom == null)
-			Debug.LogWarning("Um, " + newDoor.name + " doesn't have connection to current room?");
+			LogWarning("Um, " + newDoor.name + " doesn't have connection to current room?");
 
 		_activeMemory.NextRoom = nextRoom;
 
@@ -171,7 +171,7 @@ public class MentalStateControl : MonoBehaviour
 		// Verify the current room and fix if in an error state
 		if (_activeMemory.CurrentRoom == null || !_activeMemory.CurrentRoom.IsPersonInRoom(this))
 		{
-			Debug.Log("Resolving CurrentRoom discrepancy: " + _activeMemory.CurrentRoom);
+			LogMessage("Resolving CurrentRoom discrepancy: " + _activeMemory.CurrentRoom);
 
 			Room[] allRooms = FindObjectsOfType<Room>();
 			if (allRooms != null && allRooms.Length > 0)
@@ -199,6 +199,22 @@ public class MentalStateControl : MonoBehaviour
 			}
 		}
 	}
+
+	#region Debug Functions
+	[System.Diagnostics.Conditional("PRINT_MENTAL_STATE")]
+	public void LogMessage (string message)
+	{
+		string logString = "MSC - " + this.name + " - " + _activeMemory.CurrentState.ToString() + ": " + message; 
+		Debug.Log(logString);
+	}
+
+	[System.Diagnostics.Conditional("PRINT_MENTAL_STATE")]
+	public void LogWarning (string warning)
+	{
+		string warningString = "MSC - " + this.name + " - " + _activeMemory.CurrentState.ToString() + ": " + warning; 
+		Debug.Log(warningString);
+	}
+	#endregion
 
 	/// <summary>
 	/// A collection of information the person knows
