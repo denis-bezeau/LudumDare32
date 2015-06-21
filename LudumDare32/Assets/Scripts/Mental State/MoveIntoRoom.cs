@@ -15,22 +15,22 @@ namespace MentalStates
 
 		public override void Begin ()
 		{
-			base.Begin ();
+			base.Begin();
 
 			if (_memory.CurrentRoom == null)
 			{
-				Debug.LogWarning ("Why aren't we in a room");
+				Debug.LogWarning("Why aren't we in a room");
 			}
 		}
 
 		public override void UpdateState ()
 		{
-			base.UpdateState ();
+			base.UpdateState();
 
-			Vector3 roomPoint = FindRoomPoint ();
+			Vector3 roomPoint = FindRoomPoint();
 
-			_parentControl.SetNewTarget (roomPoint);
-			_parentControl.ChangeMentalState<MoveToTarget> ();
+			_parentControl.SetNewTarget(roomPoint);
+			_parentControl.ChangeMentalState<MoveToTarget>();
 		}
 
 		private Vector3 FindRoomPoint ()
@@ -38,17 +38,19 @@ namespace MentalStates
 			// TODO: Add more variety
 			Vector3 chosenPoint = Vector3.zero;
 
+			Room roomToChooseFrom = null;
+
 			if (_memory.NextRoom != null)
 			{
-				Debug.Log ("Choosing point in " + _memory.NextRoom);
-				chosenPoint = _memory.NextRoom.GetRoomCenter ();
+				roomToChooseFrom = _memory.NextRoom;
 			}
 			else
 			{
-				Debug.Log ("Choosing point in " + _memory.CurrentRoom);
-				chosenPoint = _memory.CurrentRoom.GetRoomCenter ();
+				roomToChooseFrom = _memory.CurrentRoom;
 			}
-			Debug.Log ("Chosen target point: " + chosenPoint);
+			chosenPoint = roomToChooseFrom.GetRoomCenter();
+
+			Debug.Log("MoveIntoRoom Chose point in " + roomToChooseFrom.name + " " + chosenPoint);
 			return chosenPoint;
 		}
 	}

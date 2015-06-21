@@ -41,9 +41,9 @@ public class MentalStateControl : MonoBehaviour
 	{
 
 		//Room startingRoom = FindObjectOfType (typeof(SpawnRoom)) as SpawnRoom;
-		_activeMemory = new Memory ();
+		_activeMemory = new Memory();
 		//_activeMemory.CurrentRoom = startingRoom;
-		ChangeMentalState<MentalStates.Idle> ();
+		ChangeMentalState<MentalStates.Idle>();
 
 		//PersonBody = GetComponent<Rigidbody> ();
 		//PersonCollider = GetComponent<SphereCollider> ();
@@ -51,50 +51,55 @@ public class MentalStateControl : MonoBehaviour
 
 	private void Update ()
 	{
-		CheckMentalState ();
+		CheckMentalState();
 
 		// Don't do much here other than make sure the current state is executing correctly
 		if (_activeMemory.CurrentState != null)
 		{
-			_activeMemory.CurrentState.UpdateState ();
+			_activeMemory.CurrentState.UpdateState();
 		}
 		else
 		{
-			Debug.LogError ("We've lost the current state somehow! Shit.");
-			ChangeMentalState<MentalStates.Idle> ();
+			Debug.LogError("We've lost the current state somehow! Shit.");
+			ChangeMentalState<MentalStates.Idle>();
 		}
 	}
 
 	private void OnDrawGizmosSelected ()
 	{
-		Gizmos.color = Color.yellow;
-		Gizmos.DrawLine (transform.position, _activeMemory.TargetPosition);
+		if (Application.isPlaying)
+		{
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawLine(transform.position, _activeMemory.TargetPosition);
+		}
 	}
 	#endregion
 
 	public void ChangeMentalState<T> () where T : MentalStates.MentalState
 	{
-		Debug.Log ("Ending current state: " + _activeMemory.CurrentState);
 		if (_activeMemory.CurrentState != null)
 		{
-			_activeMemory.CurrentState.End ();
+			_activeMemory.CurrentState.End();
 		}
 
 		_activeMemory.PreviousState = _activeMemory.CurrentState;
 
 		try
 		{
-			_activeMemory.CurrentState = (T)System.Activator.CreateInstance (typeof(T), new object[] { this });
+			_activeMemory.CurrentState = (T)System.Activator.CreateInstance(typeof(T), new object[] { this });
 		}
 		catch (System.Exception e)
 		{
-			Debug.LogError ("Problem with creating new MentalState: " + e.Message);
+			Debug.LogError("Problem with creating new MentalState: " + e.Message);
 
 			// Default to Idle for now
-			_activeMemory.CurrentState = new MentalStates.Idle (this);
+			_activeMemory.CurrentState = new MentalStates.Idle(this);
 		}
 
-		_activeMemory.CurrentState.Begin ();
+		// TODO: We need to restrict these or print them another way
+		Debug.Log("Changing state from " + _activeMemory.PreviousState + " to " + _activeMemory.CurrentState);
+
+		_activeMemory.CurrentState.Begin();
 	}
 
 	/// <summary>
@@ -105,15 +110,15 @@ public class MentalStateControl : MonoBehaviour
 	{
 		if (newRoom == _activeMemory.CurrentRoom)
 		{
-			Debug.LogWarning (this.name + " is entering the room they are already in?");
+			Debug.LogWarning(this.name + " is entering the room they are already in?");
 		}
 
-		if (_activeMemory.CurrentRoom != null && !_activeMemory.CurrentRoom.IsConnectedToRoom (newRoom))
+		if (_activeMemory.CurrentRoom != null && !_activeMemory.CurrentRoom.IsConnectedToRoom(newRoom))
 		{
-			Debug.LogError (this.name + " is moving between rooms that aren't connected! " + _activeMemory.CurrentRoom + " and " + newRoom);
+			Debug.LogError(this.name + " is moving between rooms that aren't connected! " + _activeMemory.CurrentRoom + " and " + newRoom);
 		}
 
-		Debug.Log (this.name + " is entering " + newRoom);
+		Debug.Log(this.name + " is entering " + newRoom);
 		_activeMemory.CurrentRoom = newRoom;
 	}
 
@@ -135,14 +140,14 @@ public class MentalStateControl : MonoBehaviour
 
 	public void SetTargetDoor (Door newDoor)
 	{
-		Room nextRoom = newDoor.GetOtherRoom (_activeMemory.CurrentRoom);
+		Room nextRoom = newDoor.GetOtherRoom(_activeMemory.CurrentRoom);
 
 		if (nextRoom == null)
-			Debug.LogWarning ("Um, " + newDoor.name + " doesn't have connection to current room?");
+			Debug.LogWarning("Um, " + newDoor.name + " doesn't have connection to current room?");
 
 		_activeMemory.NextRoom = nextRoom;
 
-		SetNewTarget (newDoor.gameObject);
+		SetNewTarget(newDoor.gameObject);
 	}
 
 	public void SetNewTarget (GameObject targetObj)
@@ -164,11 +169,11 @@ public class MentalStateControl : MonoBehaviour
 	{
 
 		// Verify the current room and fix if in an error state
-		if (_activeMemory.CurrentRoom == null || !_activeMemory.CurrentRoom.IsPersonInRoom (this))
+		if (_activeMemory.CurrentRoom == null || !_activeMemory.CurrentRoom.IsPersonInRoom(this))
 		{
-			Debug.Log ("Resolving CurrentRoom discrepancy: " + _activeMemory.CurrentRoom);
+			Debug.Log("Resolving CurrentRoom discrepancy: " + _activeMemory.CurrentRoom);
 
-			Room[] allRooms = FindObjectsOfType<Room> ();
+			Room[] allRooms = FindObjectsOfType<Room>();
 			if (allRooms != null && allRooms.Length > 0)
 			{
 				foreach (Room r in allRooms)
@@ -176,7 +181,7 @@ public class MentalStateControl : MonoBehaviour
 					if (!r.gameObject.activeInHierarchy)
 						continue;
 
-					if (r.IsPersonInRoom (this))
+					if (r.IsPersonInRoom(this))
 					{
 						_activeMemory.CurrentRoom = r;
 						break;
@@ -185,12 +190,12 @@ public class MentalStateControl : MonoBehaviour
 
 				if (_activeMemory.CurrentRoom == null)
 				{
-					Debug.LogError (this.name + " couldn't be found in any room!");
+					Debug.LogError(this.name + " couldn't be found in any room!");
 				}
 			}
 			else
 			{
-				Debug.LogError ("No rooms found?");
+				Debug.LogError("No rooms found?");
 			}
 		}
 	}

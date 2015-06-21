@@ -15,7 +15,7 @@ namespace MentalStates
 
 		public virtual void Begin ()
 		{
-			Debug.Log ("State beginning: " + this.ToString ());
+
 		}
 
 		public virtual void UpdateState ()

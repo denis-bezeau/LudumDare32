@@ -20,53 +20,57 @@ namespace MentalStates
 
 		public override void Begin ()
 		{
-			base.Begin ();
+			base.Begin();
 
 			if (_memory.TargetObject == null && _memory.TargetPosition == null)
 			{
-				Debug.LogWarning ("Trying to move without a target!");
-				_parentControl.ChangeMentalState<Idle> ();
+				Debug.LogWarning("Trying to move without a target!");
+				_parentControl.ChangeMentalState<Idle>();
 				return;
 			}
 
 			if (_memory.TargetPosition == null && _memory.TargetObject != null)
 			{
-				Debug.LogWarning ("No target position, but we have target object. This is incorrect, we'll try again.");
-				_parentControl.SetNewTarget (_memory.TargetObject);
+				Debug.LogWarning("No target position, but we have target object. This is incorrect, we'll try again.");
+				_parentControl.SetNewTarget(_memory.TargetObject);
 			}
 		}
 
 		public override void UpdateState ()
 		{
-			base.UpdateState ();
+			base.UpdateState();
 
-			if (HaveArrived ())
+			if (HaveArrived())
 			{
 				if (_memory.TargetObject == null)
 				{
 					// We were just going to a point, look for something new
-					_parentControl.ChangeMentalState<ChooseDoor> ();
+					_parentControl.ChangeMentalState<Idle>();
 				}
-				else if (_memory.TargetObject.GetComponent<Door> () != null)
+				else if (_memory.TargetObject.GetComponent<Door>() != null)
 				{
 					// If we've made it to a door, go inside
-					_parentControl.ChangeMentalState<MoveIntoRoom> ();
+					_parentControl.ChangeMentalState<MoveIntoRoom>();
+				}
+				else if (_memory.TargetObject.GetComponent<InteractiveObject>() != null)
+				{
+					_parentControl.ChangeMentalState<Interact>();
 				}
 				else
 				{
 					// We've come to another type of object, figure out what to do
 				}
 			}
-			else if (AreWeObstructed ())
+			else if (AreWeObstructed())
 			{
 				// TODO: We'll probably want at least one random state and
 				//       other possible states to move to depending on personality
-				_parentControl.ChangeMentalState<Idle> ();
+				_parentControl.ChangeMentalState<Idle>();
 			}
 			else
 			{
 				// Keep on truckn'
-				WalkToPosition ();
+				WalkToPosition();
 			}
 		}
 
@@ -116,7 +120,7 @@ namespace MentalStates
 			delta.z = 0.0f;
 
 			// No - keep moving towards our target
-			_parentControl.PersonBody.AddForce (delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);
+			_parentControl.PersonBody.AddForce(delta.normalized * m_walkSpeed * m_speedModifier, ForceMode.Force);
 		}
 	}
 }
