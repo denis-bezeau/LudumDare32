@@ -45,6 +45,9 @@ public class Room : MonoBehaviour
 		get{ return (_interactiveObjects.Count > 0);}
 	}
 
+
+
+
 	#region Unity/Monobehaviour Functions
 	protected void Awake ()
 	{
@@ -80,9 +83,12 @@ public class Room : MonoBehaviour
 			Gizmos.color = Color.green;
 		}
 	
-		foreach (Door d in _doors)
+		if (showDoorConnections)
 		{
-			Gizmos.DrawLine(GetRoomCenter(), d.transform.position);
+			foreach (Door d in _doors)
+			{
+				Gizmos.DrawLine(GetRoomCenter(), d.transform.position);
+			}
 		}
 
 		Gizmos.DrawCube(GetRoomCenter(), new Vector3(0.5f, 0.5f, 0.5f));
@@ -90,11 +96,24 @@ public class Room : MonoBehaviour
 
 	private void OnDrawGizmosSelected ()
 	{
-		foreach (Room r in GetConnectedRooms())
+		if (showRoomConnections)
 		{
-			Gizmos.color = Color.yellow;
-			Gizmos.DrawLine(GetRoomCenter(), r.GetRoomCenter());
+			foreach (Room r in GetConnectedRooms())
+			{
+				Gizmos.color = Color.yellow;
+				Gizmos.DrawLine(GetRoomCenter(), r.GetRoomCenter());
+			}
 		}
+
+		if (showObjectConnections)
+		{
+			foreach (InteractiveObject io in _interactiveObjects)
+			{
+				Gizmos.color = Color.magenta;
+				Gizmos.DrawLine(GetRoomCenter(), io.transform.position);
+			}
+		}
+
 	}
 	#endregion
 
@@ -318,6 +337,10 @@ public class Room : MonoBehaviour
 	
 	#region Editor Functions
 #if UNITY_EDITOR
+	// Gizmo options
+	public static bool showDoorConnections;
+	public static bool showRoomConnections;
+	public static bool showObjectConnections;
 
 	/// <summary>
 	/// Adds the door to room.

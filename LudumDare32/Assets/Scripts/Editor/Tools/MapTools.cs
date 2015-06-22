@@ -35,7 +35,7 @@ public class MapTools : EditorWindow
 	
 	void OnGUI ()
 	{
-		GUILayout.Label("Testing", EditorStyles.boldLabel);
+		GUILayout.Label("Object Tools", EditorStyles.boldLabel);
 		
 		_scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
@@ -83,6 +83,24 @@ public class MapTools : EditorWindow
 		{
 			EditorGUILayout.HelpBox("There are unassigned objects, consult the Console Window", MessageType.Error);
 		}
+
+		GUILayout.Label("Room Gizmo Options", EditorStyles.boldLabel);
+
+		// We use buttons so we can make sure the current room is update after a change
+
+		bool newDoor = GUILayout.Toggle(Room.showDoorConnections, "Door Connections");
+		bool newRoom = GUILayout.Toggle(Room.showRoomConnections, "Room Connections");
+		bool newObject = GUILayout.Toggle(Room.showObjectConnections, "Object Connections");
+
+		if (newDoor != Room.showDoorConnections || newRoom != Room.showRoomConnections || newObject != Room.showObjectConnections)
+		{
+			SceneView.RepaintAll();
+		}
+
+		// Update values
+		Room.showDoorConnections = newDoor;
+		Room.showRoomConnections = newRoom;
+		Room.showObjectConnections = newObject;
 
 		EditorGUILayout.EndScrollView();
 	}
