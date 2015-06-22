@@ -43,7 +43,7 @@ namespace MentalStates
 		
 		public override void UpdateState ()
 		{
-			bool isInteractionComplete = _currentInteraction.Interact(_targetObject);
+			bool isInteractionComplete = _currentInteraction.Interact(_targetObject, _parentControl);
 
 			if (isInteractionComplete)
 			{

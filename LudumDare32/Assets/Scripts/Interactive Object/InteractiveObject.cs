@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class InteractiveObject : MonoBehaviour
+public abstract class InteractiveObject : MonoBehaviour
 {
 
 	private bool _isBeingUsed = false;
@@ -9,16 +9,7 @@ public class InteractiveObject : MonoBehaviour
 		get { return _isBeingUsed;}
 	}
 
-	private List<Interaction> _interactions = new List<Interaction>
-	{
-		new ToggleLight()
-	};
-
-	public List<Interaction> GetInteractions ()
-	{
-		return _interactions;
-	}
-
+	public abstract List<Interaction> GetInteractions ();
 
 	public virtual void BeginInteracting ()
 	{

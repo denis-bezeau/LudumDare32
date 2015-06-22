@@ -13,9 +13,11 @@ public abstract class Interaction
 {
 	List<InteractionBenefit> _benefits;
 
+	// TODO: An interation may have requirements (be holding an object, npc of certain type, etc)
 	//public abstract bool CheckRequirements ();
-	
-	public abstract bool Interact (InteractiveObject interObject);
+
+	// TODO: Should there be other overloads for this?
+	public abstract bool Interact (InteractiveObject interObject, MentalStateControl mentalState);
 
 }
 

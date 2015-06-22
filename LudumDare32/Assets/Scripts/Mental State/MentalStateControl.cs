@@ -1,4 +1,4 @@
-
+//#define PRINT_MENTAL_STATE
 using UnityEngine;
 
 /// <summary>
@@ -201,6 +201,8 @@ public class MentalStateControl : MonoBehaviour
 	}
 
 	#region Debug Functions
+
+
 	[System.Diagnostics.Conditional("PRINT_MENTAL_STATE")]
 	public void LogMessage (string message)
 	{
