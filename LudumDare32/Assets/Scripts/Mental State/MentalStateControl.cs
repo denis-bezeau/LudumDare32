@@ -23,7 +23,10 @@ public class MentalStateControl : MonoBehaviour
 	[SerializeField]
 	private Memory
 		_activeMemory = null;
-	private PersonalityType _personality = PersonalityType.EXPLORER; // TODO: for now
+
+	[SerializeField]
+	private PersonalityType
+		_personality = PersonalityType.EXPLORER; // TODO: for now
 
 
 	#region Properties
@@ -221,6 +224,8 @@ public class MentalStateControl : MonoBehaviour
 	/// <summary>
 	/// A collection of information the person knows
 	/// </summary>
+
+	[System.Serializable]
 	public class Memory
 	{
 		public MentalStates.MentalState CurrentState = null;

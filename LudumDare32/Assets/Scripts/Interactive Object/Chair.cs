@@ -34,6 +34,7 @@ public class SitOn : Interaction
 			_personSprite = mentalState.gameObject.GetComponent<PersonSpriteFacing>();
 			if (_personSprite != null)
 			{
+				// Yeah, we flip them for now
 				_personSprite.FlipVertical();
 			}
 			else

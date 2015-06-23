@@ -50,6 +50,7 @@ namespace MentalStates
 				else if (_memory.TargetObject.GetComponent<Door>() != null)
 				{
 					// If we've made it to a door, go inside
+					_memory.RecentDoor = _memory.TargetObject.GetComponent<Door>();
 					_parentControl.ChangeMentalState<MoveIntoRoom>();
 				}
 				else if (_memory.TargetObject.GetComponent<InteractiveObject>() != null)

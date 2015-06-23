@@ -21,8 +21,13 @@ namespace MentalStates
 			_idleTime += UnityEngine.Time.deltaTime;
 			if (_idleTime > DEFAULT_IDLE_DURATION)
 			{
-				// TODO: Do something better than this
-				if (Random.value > 0.5 && _memory.CurrentRoom.HasObjects)
+				// TODO: Do they want to escape?
+				if (_memory.CurrentRoom is EscapeRoom)
+				{
+					_parentControl.ChangeMentalState<MentalStates.Escape>();
+				}
+				// TODO: Do something better than this for other decisions
+				else if (Random.value > 0.5 && _memory.CurrentRoom.HasObjects)
 				{
 					_parentControl.ChangeMentalState<MentalStates.ChooseObject>();
 				}
