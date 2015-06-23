@@ -7,15 +7,14 @@ public class Lamp : InteractiveObject
 	Light
 		_theLight = null;
 
-	protected List<Interaction> _interactions = new List<Interaction>
+	private void Awake ()
 	{
-		new ToggleLight()
-	};
-
-	public override List<Interaction> GetInteractions ()
-	{
-		return _interactions;
+		_interactions = new List<Interaction>
+		{
+			new ToggleLight()
+		};
 	}
+		
 
 	public bool IsOn {
 		get { 

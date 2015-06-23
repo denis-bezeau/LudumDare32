@@ -52,10 +52,8 @@ namespace MentalStates
 
 			if (availableObjects.Count > 0)
 			{
-				int objIdx = 0;
-				
-				// TODO: Choose which object to walk to
-				chosenObject = availableObjects[objIdx];
+				int chosenIdx = Random.Range(0, availableObjects.Count);
+				chosenObject = availableObjects[chosenIdx];
 			}
 			
 			_parentControl.LogMessage("Chosen Object: " + chosenObject + " (" + availableObjects.Count + " available)");

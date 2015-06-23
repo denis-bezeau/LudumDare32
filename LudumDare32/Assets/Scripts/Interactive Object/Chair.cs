@@ -3,24 +3,29 @@ using System.Collections.Generic;
 
 public class Chair : InteractiveObject
 {
-	protected List<Interaction> _interactions = new List<Interaction>
+	private void Awake ()
 	{
-		new SitOn()
-	};
-
-	public override List<Interaction> GetInteractions ()
-	{
-		return _interactions;
+		_interactions = new List<Interaction>
+		{
+			new SitOn(gameObject.transform.position)
+		};
 	}
 }
 
 public class SitOn : Interaction
 {
 	private const float DEFAULT_SIT_DURATION = 2.0f;
-	private float _sitDuration = DEFAULT_SIT_DURATION;
+
+	private float _sitDuration = 0.0f;
 	private float _sitTimer = 0.0f;
 	private Vector3 _sitSpot = Vector3.zero;
 	private PersonSpriteFacing _personSprite = null;
+
+	public SitOn (Vector3 sitPosition, float duration = DEFAULT_SIT_DURATION)
+	{
+		_sitSpot = sitPosition;
+		_sitDuration = duration;
+	}
 
 	public override bool Interact (InteractiveObject interObject, MentalStateControl mentalState)
 	{
@@ -40,7 +45,7 @@ public class SitOn : Interaction
 
 			// Stop them right here
 			mentalState.PersonBody.velocity = Vector3.zero;
-			mentalState.gameObject.transform.position = interObject.transform.position;
+			mentalState.gameObject.transform.position = _sitSpot;
 		}
 
 		_sitTimer += Time.deltaTime;

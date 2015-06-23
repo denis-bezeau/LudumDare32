@@ -54,7 +54,7 @@ namespace MentalStates
 
 		private Interaction ChooseInteraction ()
 		{
-			List<Interaction> possibleInteractions = _targetObject.GetInteractions();
+			List<Interaction> possibleInteractions = _targetObject.Interactions;
 			if (possibleInteractions.Count > 0)
 			{
 				// TODO: Choose an interaction correctly
